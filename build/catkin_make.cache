@@ -1,0 +1,2 @@
+astar_gridmap_searcher:map_generator:minimum_snap
+-DCMAKE_BUILD_TYPE=RelWithDebInfo -DCATKIN_DEVEL_PREFIX=/home/zs/motion_planner/devel -DCMAKE_INSTALL_PREFIX=/home/zs/motion_planner/install -G Unix Makefiles
