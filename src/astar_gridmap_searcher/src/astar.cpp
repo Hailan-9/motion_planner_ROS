@@ -38,92 +38,65 @@ float Astar::getF(Point *curPoint)
 }
 
 
-//判断点是否在openlist中
-Point* Astar::isInlist(const list<Point*> &openList, const Point *curPoint) const
-{
-
-    for(auto p : openList)
-    {
-        if(p->x == curPoint->x && p->y == curPoint->y)
-        {
-            return p;
-        }
-    }
-
-    return NULL;
-}
-
-
-//从开放列表中得到最小的F值所对应的点
-Point* Astar::getLeastFpoint()
-{
-    if(!openList.empty())
-    {
-        auto resPoint = openList.front();
-        for(auto p : openList)
-        {
-            if(p->F < resPoint->F )
-            {
-                resPoint = p;
-            }
-        }
-        return resPoint;
-    }
-    return NULL;
-}
-
-
 Point* Astar::searchPath(Point& startPoint, Point& endPoint,bool isIgnoreCorner)
 {
     //首先是起始点添加进openlist
     //openList.push_back(&startPoint);
     //置入起点，拷贝开辟一个节点，内外隔离
-    openList.push_back(new Point(startPoint.x,startPoint.y) );
+    Point* temp_startPoint = new Point(startPoint.x,startPoint.y);
+    temp_startPoint->G = 0;
+    temp_startPoint->point_State = IN_OPEN_SET;
+
+    openList.push(temp_startPoint);
     Point* curPoint;
     do{
 
-            //寻找开启列表中F值最低的点，称其为当前点
-            curPoint = getLeastFpoint();
+        //  寻找开启列表中F值最低的点，称其为当前点
+        //  curPoint = getLeastFpoint();
+        curPoint = openList.top();
+        openList.pop();
+        curPoint->point_State == IN_CLOSE_SET;
+        // openList.remove(curPoint);
+        // closeList.push_back(curPoint);
 
-            openList.remove(curPoint);
-            closeList.push_back(curPoint);
 
-            auto surroundPoint = getSurroundPoint(curPoint,isIgnoreCorner);
+        auto surroundPoint = getSurroundPoint(curPoint,isIgnoreCorner);
 
-            // int count = 0;
-            // for (auto it = surroundPoint.begin(); it != surroundPoint.end(); ++it) {
-            //     count++;
-            // }
-            // std::cout << "List capacity: " << count << std::endl;
-            // cout<<"test4"<<endl;
+        // int count = 0;
+        // for (auto it = surroundPoint.begin(); it != surroundPoint.end(); ++it) {
+        //     count++;
+        // }
+        // std::cout << "List capacity: " << count << std::endl;
+        // cout<<"test4"<<endl;
 
-            for(auto p :  surroundPoint)
+        for(auto p :  surroundPoint)
+        {
+            // 不在openlist中
+            if(p->G == INFINITY && p->point_State == NOT_EXPAND)
             {
-                if(!isInlist(openList,p))
+                p->parent = curPoint;
+                p->G = getG(curPoint,p);
+                p->H = getH(p,&endPoint);
+                p->F = getF(p);
+                p->point_State == IN_OPEN_SET;
+                openList.push(p);
+            }
+            else
+            {
+                if(getG(curPoint,p) < p->G)
                 {
                     p->parent = curPoint;
                     p->G = getG(curPoint,p);
-                    p->H = getH(p,&endPoint);
+                    // p->H = getH(p,endPoint);
                     p->F = getF(p);
-
-                    openList.push_back(p);
-                }
-                else
-                {
-                    if(getG(curPoint,p) < p->G)
-                    {
-                        p->parent = curPoint;
-                        p->G = getG(curPoint,p);
-                        // p->H = getH(p,endPoint);
-                        p->F = getF(p);
-                        cout<<"test"<<endl;
-                    }   
-
-                }
+                    cout<<"test"<<endl;
+                }   
 
             }
 
-        }while(!isInlist(openList,&endPoint));
+        }
+
+    }while(endPoint.G != INFINITY);
 
     if(openList.empty())
     {
@@ -159,8 +132,8 @@ list<Point*> Astar::GetPath(Point& start_Point, Point& end_Point,bool isIgnoreCo
         result = result->parent;
     }
     //清空列表
-    openList.clear();
-    closeList.clear();
+    std::priority_queue<Point*, vector<Point*>, NodeComparator> empty_queue;
+    openList.swap(empty_queue);
 
     return path;
 }
@@ -171,14 +144,11 @@ bool Astar::isCanreach(const Point* curPoint, const Point* targetPoint,bool isIg
 {
 
 
-
-
-
     if(targetPoint->x <0 || targetPoint->x > map1.size() - 1 ||
        targetPoint->y <0 || targetPoint->y > map1[0].size() -1 ||
        curPoint->x == targetPoint->x&&curPoint->y == targetPoint->y
        ||map1[targetPoint->x][targetPoint->y] ==100
-       || isInlist(closeList,targetPoint) )
+       || targetPoint->point_State == IN_CLOSE_SET )
     {
         return false;
     }

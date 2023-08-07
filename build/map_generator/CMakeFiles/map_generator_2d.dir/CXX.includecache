@@ -32,6 +32,12 @@ sensor_msgs/PointCloud2.h
 pcl_conversions/pcl_conversions.h
 -
 
+/home/zs/motion_planner/src/map_generator/src/random_geometry_generator_2d.cpp
+map_generator/random_geometry_generator_2d.hpp
+/home/zs/motion_planner/src/map_generator/src/map_generator/random_geometry_generator_2d.hpp
+random
+-
+
 /opt/ros/noetic/include/geometry_msgs/Point.h
 string
 -

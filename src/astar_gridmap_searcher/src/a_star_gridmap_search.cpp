@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
 
     ROS_INFO("init----1");
 
-    astar_PathPub = nh.advertise<nav_msgs::Path>("astar_path",10);
+    astar_PathPub = nh.advertise<nav_msgs::Path>("astar_path",1);
     // 可视化起点终点
     astar_Pub_Startpoint = nh.advertise<visualization_msgs::Marker>("start_point",1);
     astar_Pub_Goalpoint = nh.advertise<visualization_msgs::Marker>("goal_point",1);
@@ -253,6 +253,10 @@ void goalPoseCallback(const geometry_msgs::PoseStamped::ConstPtr& msgPtr)
 void publishPath()
 {
     ROS_INFO("start---PublishPath------------");
+    // nav_msgs::Path empty_pathmsg;
+    // empty_pathmsg.header.stamp = ros::Time::now();
+    // empty_pathmsg.header.frame_id = "odom";
+    // astar_PathPub.publish(empty_pathmsg);
 
     nav_msgs::Path astarPathMsg;
     Eigen::Vector2d res_pos;

@@ -49,6 +49,8 @@ vector
 -
 list
 -
+queue
+-
 
 /home/zs/motion_planner/src/astar_gridmap_searcher/src/a_star_gridmap_search.cpp
 astar_gridmap_searcher/a_star_gridmap_search.hpp
