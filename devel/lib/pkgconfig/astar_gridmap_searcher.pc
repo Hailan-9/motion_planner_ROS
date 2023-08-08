@@ -1,8 +1,0 @@
-prefix=/home/zs/motion_planner/devel
-
-Name: astar_gridmap_searcher
-Description: Description of astar_gridmap_searcher
-Version: 0.0.0
-Cflags: 
-Libs: -L${prefix}/lib 
-Requires: 
