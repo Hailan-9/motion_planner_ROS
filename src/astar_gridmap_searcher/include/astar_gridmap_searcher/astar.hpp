@@ -23,6 +23,7 @@ const float kconst_diagonal = 14;
 // 被扩展的节点，也就是每次找出代价F最小的节点，存入closeset中
 #define IN_CLOSE_SET 'a'
 #define IN_OPEN_SET 'b'
+// 没有被探索的节点
 #define NOT_EXPAND 'c'
 
 struct Point

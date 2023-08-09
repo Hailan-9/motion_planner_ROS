@@ -60,12 +60,7 @@ Point* Astar::searchPath(Point& startPoint, Point& endPoint, bool isIgnoreCorner
 
         auto surroundPoint = getSurroundPoint(curPoint,isIgnoreCorner);
 
-        // int count = 0;
-        // for (auto it = surroundPoint.begin(); it != surroundPoint.end(); ++it) {
-        //     count++;
-        // }
-        // std::cout << "List capacity: " << count << std::endl;
-        // cout<<"test4"<<endl;
+
 
         for(auto p :  surroundPoint)
         {
@@ -109,7 +104,8 @@ Point* Astar::searchPath(Point& startPoint, Point& endPoint, bool isIgnoreCorner
 
 list<Point*> Astar::GetPath(Point& start_Point, Point& end_Point,bool isIgnoreCorner)
 {
-
+    
+    cout <<"getPath start----------------------------------"<<endl;
     Point* result = searchPath(start_Point, end_Point,isIgnoreCorner);
 
     if(result)
