@@ -21,9 +21,6 @@ float Astar::getG(Point *parentPoint, Point *curPoint)
     return extraG + parentG;
 }
 
-
-
-
 //得到H
 float Astar::getH(Point *curPoint,Point *endPoint)
 {
@@ -31,6 +28,7 @@ float Astar::getH(Point *curPoint,Point *endPoint)
     costH = pow( (curPoint->x - endPoint->x),2) + pow( (curPoint->y - endPoint->y),2);
     return sqrt(costH);
 }
+
 //得到F
 float Astar::getF(Point *curPoint)
 {
@@ -38,7 +36,7 @@ float Astar::getF(Point *curPoint)
 }
 
 
-Point* Astar::searchPath(Point& startPoint, Point& endPoint,bool isIgnoreCorner)
+Point* Astar::searchPath(Point& startPoint, Point& endPoint, bool isIgnoreCorner)
 {
     //首先是起始点添加进openlist
     //openList.push_back(&startPoint);
@@ -91,23 +89,21 @@ Point* Astar::searchPath(Point& startPoint, Point& endPoint,bool isIgnoreCorner)
                     p->F = getF(p);
                     cout<<"test"<<endl;
                 }   
-
             }
-
         }
 
-    }while(endPoint.G != INFINITY);
-
-    if(openList.empty())
-    {
-        return NULL;
-    }
-    else
-    {
-        endPoint.parent = curPoint;
-    }
+    }while(!(curPoint->x == endPoint.x && curPoint->y == endPoint.y) || !openList.empty());
+// 以下面这个作为循环结束的条件，是不行的，程序会陷入死循环，因为endpoint的状态没有在其他地方被更改
+// while(endPoint.G == INFINITY);
+    // if(openList.empty())
+    // {
+    //     return NULL;
+    // }
+    // else
+    // {
+    //     endPoint.parent = curPoint;
+    // }
     return &endPoint;
-
 }
 
 
@@ -122,7 +118,7 @@ list<Point*> Astar::GetPath(Point& start_Point, Point& end_Point,bool isIgnoreCo
     }
     else
     {
-        cout <<"空指针"<<endl;
+        cout <<"wrong occur***************空指针**********************"<<endl;
     }
 
     list<Point*> path;
@@ -146,8 +142,8 @@ bool Astar::isCanreach(const Point* curPoint, const Point* targetPoint,bool isIg
 
     if(targetPoint->x <0 || targetPoint->x > map1.size() - 1 ||
        targetPoint->y <0 || targetPoint->y > map1[0].size() -1 ||
-       curPoint->x == targetPoint->x&&curPoint->y == targetPoint->y
-       ||map1[targetPoint->x][targetPoint->y] ==100
+       curPoint->x == targetPoint->x && curPoint->y == targetPoint->y
+       || map1[targetPoint->x][targetPoint->y] ==100
        || targetPoint->point_State == IN_CLOSE_SET )
     {
         return false;

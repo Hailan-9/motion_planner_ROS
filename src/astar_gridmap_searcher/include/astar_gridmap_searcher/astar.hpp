@@ -17,8 +17,10 @@ using namespace std;
 /* 常量定义 */
 const float kCost_straight = 10;
 const float kconst_diagonal = 14;
-#define INFINITY 100000000
+// 左移10位 使其无穷大
+#define INFINITY 1 << 10
 // 节点状态
+// 被扩展的节点，也就是每次找出代价F最小的节点，存入closeset中
 #define IN_CLOSE_SET 'a'
 #define IN_OPEN_SET 'b'
 #define NOT_EXPAND 'c'
@@ -63,8 +65,8 @@ class Astar
     private:
 
 
-        //判断点是否在openlist中
-        Point* isInlist(const Point *curPoint) const;
+        // //判断点是否在openlist中
+        // Point* isInlist(const Point *curPoint) const;
         //得到G
         float getG(Point *parentPoint, Point *curPoint);
         //得到H
