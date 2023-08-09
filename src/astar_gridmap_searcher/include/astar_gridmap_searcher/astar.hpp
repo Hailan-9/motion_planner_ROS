@@ -18,7 +18,7 @@ using namespace std;
 const float kCost_straight = 10;
 const float kconst_diagonal = 14;
 // 左移10位 使其无穷大
-#define INFINITY 1 << 10
+#define INFINITY 1 << 30
 // 节点状态
 // 被扩展的节点，也就是每次找出代价F最小的节点，存入closeset中
 #define IN_CLOSE_SET 'a'
@@ -65,9 +65,6 @@ class Astar
 
     private:
 
-
-        // //判断点是否在openlist中
-        // Point* isInlist(const Point *curPoint) const;
         //得到G
         float getG(Point *parentPoint, Point *curPoint);
         //得到H
@@ -86,9 +83,9 @@ class Astar
 
     private:
         //地图 使用二维数组来表示
-        vector< vector<int> > map1;
+        vector<vector<int>> map1;
         // 优先级队列 F值也就是代价越小优先级越高！
-        std::priority_queue<Point*, vector<Point*>, NodeComparator> openList;
+        std::priority_queue<PointPtr, vector<PointPtr>, NodeComparator> openList;
         // list<Point *> openList;
         // list<Point *> closeList;
 };

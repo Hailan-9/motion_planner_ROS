@@ -1,7 +1,9 @@
 #include <iostream>
+#include <fstream>
 #include <math.h>
 #include "astar_gridmap_searcher/astar.hpp"
-
+extern std::ofstream outfile;
+ 
 
 void Astar::InitAstar(const vector<vector<int>> &_map)
 {
@@ -46,9 +48,10 @@ Point* Astar::searchPath(Point& startPoint, Point& endPoint, bool isIgnoreCorner
     temp_startPoint->point_State = IN_OPEN_SET;
 
     openList.push(temp_startPoint);
+    int test_count = 0;
     Point* curPoint;
     do{
-
+        test_count ++;
         //  寻找开启列表中F值最低的点，称其为当前点
         //  curPoint = getLeastFpoint();
         curPoint = openList.top();
@@ -59,7 +62,6 @@ Point* Astar::searchPath(Point& startPoint, Point& endPoint, bool isIgnoreCorner
 
 
         auto surroundPoint = getSurroundPoint(curPoint,isIgnoreCorner);
-
 
 
         for(auto p :  surroundPoint)
@@ -82,12 +84,19 @@ Point* Astar::searchPath(Point& startPoint, Point& endPoint, bool isIgnoreCorner
                     p->G = getG(curPoint,p);
                     // p->H = getH(p,endPoint);
                     p->F = getF(p);
-                    cout<<"test"<<endl;
+                    outfile <<"test---------------------------------------------------"<<endl;
                 }   
             }
         }
 
-    }while(!(curPoint->x == endPoint.x && curPoint->y == endPoint.y) || !openList.empty());
+    }while( !((curPoint->x == endPoint.x && curPoint->y == endPoint.y) || openList.empty()) );
+    cout <<"count:--------"<<test_count<<endl;
+    cout <<openList.empty()<<endl;
+    cout <<"result-------((((((((((((((()))))))))))))))"<<endl;
+    cout <<curPoint->x <<" " << endPoint.x <<"-----"<< curPoint->y <<" "  <<endPoint.y<<endl;
+    // cout <<"test debug-------------------------------"<<endl;
+    // cout <<test_count<<endl;
+    // cout <<curPoint->x <<" " << endPoint.x <<endl<< curPoint->y <<" " <<endPoint.y<<endl;
 // 以下面这个作为循环结束的条件，是不行的，程序会陷入死循环，因为endpoint的状态没有在其他地方被更改
 // while(endPoint.G == INFINITY);
     // if(openList.empty())
@@ -98,7 +107,7 @@ Point* Astar::searchPath(Point& startPoint, Point& endPoint, bool isIgnoreCorner
     // {
     //     endPoint.parent = curPoint;
     // }
-    return &endPoint;
+    return curPoint;
 }
 
 
@@ -118,11 +127,15 @@ list<Point*> Astar::GetPath(Point& start_Point, Point& end_Point,bool isIgnoreCo
     }
 
     list<Point*> path;
+    outfile <<"path-result:"<<endl;
+
     while(result)
     {
+        outfile <<"("<<result->x<<","<<result->y<<")"<<"  ";
         path.push_front(result);
         result = result->parent;
     }
+    outfile <<endl;
     //清空列表
     std::priority_queue<Point*, vector<Point*>, NodeComparator> empty_queue;
     openList.swap(empty_queue);
@@ -135,18 +148,19 @@ list<Point*> Astar::GetPath(Point& start_Point, Point& end_Point,bool isIgnoreCo
 bool Astar::isCanreach(const Point* curPoint, const Point* targetPoint,bool isIgnoreCorner) const
 {
 
-
     if(targetPoint->x <0 || targetPoint->x > map1.size() - 1 ||
        targetPoint->y <0 || targetPoint->y > map1[0].size() -1 ||
-       curPoint->x == targetPoint->x && curPoint->y == targetPoint->y
-       || map1[targetPoint->x][targetPoint->y] ==100
+
+       (curPoint->x == targetPoint->x && curPoint->y == targetPoint->y)
+
+       || map1[targetPoint->x][targetPoint->y] == 100
        || targetPoint->point_State == IN_CLOSE_SET )
     {
         return false;
     }
     else
     {
-        if(fabs(curPoint->x - targetPoint->x) + fabs(curPoint->y - targetPoint->y) ==1 )
+        if(fabs(curPoint->x - targetPoint->x) + fabs(curPoint->y - targetPoint->y) == 1)
         {
             return true;
         }

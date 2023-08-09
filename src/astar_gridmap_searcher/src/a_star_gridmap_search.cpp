@@ -10,13 +10,30 @@
 #include "astar_gridmap_searcher/a_star_gridmap_search.hpp"
 #include "astar_gridmap_searcher/astar.hpp"
 #include "astar_gridmap_searcher/algorithm_timer.h"
-using namespace std;
 
+#include <time.h>
+#include <stdio.h>
+#include <sys/time.h>
+#include <fstream>
+
+
+using namespace std;
+std::ofstream outfile;
 
 
 
 int main(int argc, char *argv[])
 {
+
+    // 创建输出文件
+    time_t currentTime;
+    time(&currentTime);
+    currentTime = currentTime + 8 * 3600; //	格林尼治标准时间+8个小时
+    tm *t = gmtime(&currentTime);	
+    string filename = "/home/zs/motion_planner/record/data" + to_string(t->tm_mon + 1) + "-" +to_string(t->tm_mday) + "-" + to_string(t->tm_hour) + "-" + to_string(t->tm_min) + ".txt";
+    outfile.open(filename.c_str());
+
+
     /* code */
     setlocale(LC_ALL,"");
     ros::init(argc, argv, "astar_node");
@@ -52,7 +69,7 @@ int main(int argc, char *argv[])
 
 
 /**************************函数定义********************************/
-
+// 无
 // 世界坐标系（也就是地图坐标系）-->栅格地图坐标系
 Eigen::Vector2d world2Gridmap(double w_x, double w_y)
 {
@@ -65,7 +82,7 @@ Eigen::Vector2d world2Gridmap(double w_x, double w_y)
     }
 
     int temp_x = int((w_x - origin_x) / resolution);
-    int temp_y = int((w_y - origin_x) / resolution);
+    int temp_y = int((w_y - origin_y) / resolution);
 
     if (temp_x < width && temp_y < height)
     {
@@ -73,6 +90,7 @@ Eigen::Vector2d world2Gridmap(double w_x, double w_y)
         return result;
     }
 }
+// 无
 // 栅格地图坐标系-->世界坐标系（也就是地图坐标系）
 Eigen::Vector2d gridmap2World(double gm_x, double gm_y)
 {
@@ -153,17 +171,17 @@ void mapCallback(const nav_msgs::OccupancyGrid::ConstPtr& msgPtr)
     for (int i = 0; i < height; i++)
     {
         vector<int> temp_v;
-
         for (int j = 0; j < width; j++)
         {
             temp_v.emplace_back( int(msgPtr->data[i*width + j]));
         }
-        
         mapData.emplace_back(temp_v);
     }
 
+
     cout <<"MapInfo"<<endl;
-    cout <<msgPtr->data.size()<<endl;;
+    cout <<msgPtr->data.size()<<endl;
+    cout <<height <<" "<<width<<endl;
     cout <<mapData.size()<<" "<<mapData[0].size()<<endl;
 }
 
@@ -187,9 +205,9 @@ void initPoseCallback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& 
     node_vis.color.g = 0.0;
     node_vis.color.b = 0.0;
 
-    node_vis.scale.x = resolution * 2;
-    node_vis.scale.y = resolution * 2;
-    node_vis.scale.z = resolution * 2;
+    node_vis.scale.x = resolution * 1;
+    node_vis.scale.y = resolution * 1;
+    node_vis.scale.z = resolution * 1;
 
     geometry_msgs::Point pt;
     pt.x = msgPtr->pose.pose.position.x;
@@ -226,9 +244,9 @@ void goalPoseCallback(const geometry_msgs::PoseStamped::ConstPtr& msgPtr)
     node_vis.color.g = 0.0;
     node_vis.color.b = 1.0;
 
-    node_vis.scale.x = resolution * 2;
-    node_vis.scale.y = resolution * 2;
-    node_vis.scale.z = resolution * 2;
+    node_vis.scale.x = resolution * 1;
+    node_vis.scale.y = resolution * 1;
+    node_vis.scale.z = resolution * 1;
 
     geometry_msgs::Point pt;
     pt.x = msgPtr->pose.position.x;

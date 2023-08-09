@@ -5,6 +5,7 @@ Panels:
     Property Tree Widget:
       Expanded:
         - /Global Options1
+        - /Grid1
         - /Marker_goal1/Namespaces1
         - /TF1/Frames1
       Splitter Ratio: 0.5
@@ -35,9 +36,9 @@ Visualization Manager:
   Class: ""
   Displays:
     - Alpha: 0.5
-      Cell Size: 1
+      Cell Size: 0.05000000074505806
       Class: rviz/Grid
-      Color: 160; 160; 164
+      Color: 32; 74; 135
       Enabled: true
       Line Style:
         Line Width: 0.029999999329447746
@@ -49,7 +50,7 @@ Visualization Manager:
         Y: 0
         Z: 0
       Plane: XY
-      Plane Cell Count: 10
+      Plane Cell Count: 100000
       Reference Frame: <Fixed Frame>
       Value: true
     - Class: rviz/Marker
@@ -57,7 +58,7 @@ Visualization Manager:
       Marker Topic: /astar_gridmap_searcher/goal_point
       Name: Marker_goal
       Namespaces:
-        "": true
+        {}
       Queue Size: 10
       Value: true
     - Alpha: 0.699999988079071
@@ -84,7 +85,7 @@ Visualization Manager:
       Marker Topic: /astar_gridmap_searcher/start_point
       Name: Marker_start
       Namespaces:
-        "": true
+        {}
       Queue Size: 10
       Value: true
     - Alpha: 1
@@ -162,7 +163,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 5.925451278686523
+      Distance: 1.6534334421157837
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -178,9 +179,9 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.9197969436645508
+      Pitch: 1.2247971296310425
       Target Frame: <Fixed Frame>
-      Yaw: 4.565006732940674
+      Yaw: 4.695009231567383
     Saved:
       - Class: rviz/Orbit
         Distance: 11.199999809265137
