@@ -3,7 +3,64 @@
 #include <math.h>
 #include "astar_gridmap_searcher/astar.hpp"
 extern std::ofstream outfile;
- 
+using namespace A_Star;
+
+Astar::~Astar()
+{
+    for (int i(0); i < allocate_num; i++)
+    {
+        delete path_node_pool[i];
+    }
+    cout <<"执行astar析构函数---------"<<endl;
+
+}
+
+void Astar::init()
+{
+    path_node_pool.resize(allocate_num);
+    cout <<"-------2.1"<<endl;
+
+    for (int i(0); i < allocate_num; i++)
+    {
+        path_node_pool[i] = new Point;
+    }
+    use_node_num = 0;
+    iter_num = 0;
+}
+
+void Astar::reset()
+{
+    expanded_nodes.clear();
+    path_nodes.clear();
+    std::priority_queue<Point*, vector<Point*>, NodeComparator> empty_queue;
+    openList.swap(empty_queue);
+    // 被探索过的每个节点地址都是固定的 牛
+    cout <<"reset----"<<endl;
+    cout <<"use_node_num:"<<use_node_num<<endl;
+    cout <<"iter_num:"<<iter_num<<endl;
+
+    cout <<"capacity:"<<path_node_pool.capacity()<<endl;
+    cout <<"size:"<<path_node_pool.size()<<endl;
+
+
+    for (int i=0; i < use_node_num; i++)
+    {
+        PointPtr node = path_node_pool[i];
+        node->parent = NULL;
+        node->point_State = NOT_EXPAND;
+    }
+
+    use_node_num = 0;
+    iter_num = 0;
+}
+
+// todolist这个地方有点问题 参数没有传入
+void Astar::setParam(const ros::NodeHandle& nh)
+{
+    nh.param("astar_node/allocate_num", allocate_num, 10000);
+    cout <<"param set finish-------------:"<<allocate_num<<endl;
+}
+
 
 void Astar::InitAstar(const vector<vector<int>> &_map)
 {
@@ -17,13 +74,13 @@ float Astar::getG(Point *parentPoint, Point *curPoint)
     float extraG;
     float parentG;
     extraG = fabs(curPoint->x - parentPoint->x) + fabs(curPoint->y - parentPoint->y);
-    extraG = (extraG == 1) ? kCost_straight : kconst_diagonal;
+    extraG = (extraG == 1) ? kCost_straight : kCost_diagonal;
     // parentG = curPoint->parent == NULL ? 0 : curPoint->parent->G;
     parentG = parentPoint->G;
     return extraG + parentG;
 }
 
-//得到H
+//得到H todolist需要改写 有几种的启发式函数 都需要写上，并根据传参的不同选择不同的启发式函数
 float Astar::getH(Point *curPoint,Point *endPoint)
 {
     float costH;
@@ -37,187 +94,195 @@ float Astar::getF(Point *curPoint)
     return curPoint->G + curPoint->H;
 }
 
-
-Point* Astar::searchPath(Point& startPoint, Point& endPoint, bool isIgnoreCorner)
+void Astar::retrievePath(PointPtr end_node)
 {
-    //首先是起始点添加进openlist
-    //openList.push_back(&startPoint);
-    //置入起点，拷贝开辟一个节点，内外隔离
-    Point* temp_startPoint = new Point(startPoint.x,startPoint.y);
-    temp_startPoint->G = 0;
-    temp_startPoint->point_State = IN_OPEN_SET;
+    PointPtr cur_node = end_node;
+    path_nodes.push_back(cur_node);
+    while (cur_node->parent != NULL)
+    {
+        cur_node = cur_node->parent;
+        path_nodes.push_back(cur_node);
+    }
 
-    openList.push(temp_startPoint);
-    int test_count = 0;
-    Point* curPoint;
-    do{
-        test_count ++;
-        //  寻找开启列表中F值最低的点，称其为当前点
-        //  curPoint = getLeastFpoint();
-        curPoint = openList.top();
-        openList.pop();
-        curPoint->point_State == IN_CLOSE_SET;
-        // openList.remove(curPoint);
-        // closeList.push_back(curPoint);
-
-
-        auto surroundPoint = getSurroundPoint(curPoint,isIgnoreCorner);
-
-
-        for(auto p :  surroundPoint)
-        {
-            // 不在openlist中
-            if(p->G == INFINITY && p->point_State == NOT_EXPAND)
-            {
-                p->parent = curPoint;
-                p->G = getG(curPoint,p);
-                p->H = getH(p,&endPoint);
-                p->F = getF(p);
-                p->point_State == IN_OPEN_SET;
-                openList.push(p);
-            }
-            else
-            {
-                if(getG(curPoint,p) < p->G)
-                {
-                    p->parent = curPoint;
-                    p->G = getG(curPoint,p);
-                    // p->H = getH(p,endPoint);
-                    p->F = getF(p);
-                    outfile <<"test---------------------------------------------------"<<endl;
-                }   
-            }
-        }
-
-    }while( !((curPoint->x == endPoint.x && curPoint->y == endPoint.y) || openList.empty()) );
-    cout <<"count:--------"<<test_count<<endl;
-    cout <<openList.empty()<<endl;
-    cout <<"result-------((((((((((((((()))))))))))))))"<<endl;
-    cout <<curPoint->x <<" " << endPoint.x <<"-----"<< curPoint->y <<" "  <<endPoint.y<<endl;
-    // cout <<"test debug-------------------------------"<<endl;
-    // cout <<test_count<<endl;
-    // cout <<curPoint->x <<" " << endPoint.x <<endl<< curPoint->y <<" " <<endPoint.y<<endl;
-// 以下面这个作为循环结束的条件，是不行的，程序会陷入死循环，因为endpoint的状态没有在其他地方被更改
-// while(endPoint.G == INFINITY);
-    // if(openList.empty())
-    // {
-    //     return NULL;
-    // }
-    // else
-    // {
-    //     endPoint.parent = curPoint;
-    // }
-    return curPoint;
+    reverse(path_nodes.begin(), path_nodes.end());
 }
 
 
-list<Point*> Astar::GetPath(Point& start_Point, Point& end_Point,bool isIgnoreCorner)
+int Astar::searchPath(Point& startPoint, Point& endPoint, bool isIgnoreCorner)
 {
-    
-    cout <<"getPath start----------------------------------"<<endl;
-    Point* result = searchPath(start_Point, end_Point,isIgnoreCorner);
+    // 首先是起始点添加进openlist
+    Point* curPoint = path_node_pool[0];
+    curPoint->x = startPoint.x;
+    curPoint->y = startPoint.y;
+    curPoint->pos = startPoint.pos;
+    curPoint->G = 0;
+    curPoint->H = getH(curPoint,&endPoint);
+    curPoint->F = getF(curPoint);
+    curPoint->parent = NULL;
+    curPoint->point_State = IN_OPEN_SET;
 
-    if(result)
+    openList.push(curPoint);
+    use_node_num += 1;
+    expanded_nodes.insert(curPoint->pos,curPoint);
+
+    do{
+        // 寻找开启列表中F值最低的点，称其为当前点
+        curPoint = openList.top();
+        /* -----------------Determine if the destination has been reached--------------------- */
+        bool reach_goal = abs(curPoint->x - endPoint.x) <=1 && abs(curPoint->y - endPoint.y) <=1;
+        if(reach_goal)
+        {
+            retrievePath(curPoint);
+            cout <<"path search success!!!!!!"<<endl;
+            cout << "use node num: " << use_node_num << endl;
+            cout << "iter num: " << iter_num << endl;
+            return REACH_END;
+        }
+
+        openList.pop();
+        curPoint->point_State == IN_CLOSE_SET;
+        iter_num += 1;
+
+
+        Eigen::Vector2f temp_point;
+        for(int x = curPoint->x - 1; x<=curPoint->x + 1; x++)
+        {
+            for(int y = curPoint->y - 1; y<=curPoint->y + 1; y++)
+            {
+                temp_point <<x, y;
+                if( isCanreach(curPoint, temp_point, isIgnoreCorner) )
+                {
+                    PointPtr neighbor_node = expanded_nodes.find(temp_point);
+                    
+                    if (neighbor_node != NULL && neighbor_node->point_State == IN_CLOSE_SET)
+                    {
+                        continue;
+                    }
+                    // 不在openlist中
+                    if (neighbor_node == NULL)
+                    {
+                        neighbor_node = path_node_pool[use_node_num];
+                        neighbor_node->parent = curPoint;
+                        neighbor_node->set_pos(x, y);
+                        neighbor_node->G = getG(curPoint,neighbor_node);
+                        neighbor_node->H = getH(neighbor_node,&endPoint);
+                        neighbor_node->F = getF(neighbor_node);
+                        neighbor_node->point_State = IN_OPEN_SET;
+
+                        openList.push(neighbor_node);
+                        expanded_nodes.insert(neighbor_node->pos, neighbor_node);
+
+                        use_node_num += 1;
+
+                        if (use_node_num == allocate_num)
+                        {
+                            cout <<"***run out of node_pool memory***" <<endl;
+                            cout <<"use_node_num: "<<use_node_num<<endl;
+                            cout <<"iterm_num: "<<iter_num<<endl;
+
+                            return NO_PATH;
+                        }
+                    }
+                    else if(neighbor_node->point_State == IN_OPEN_SET)
+                    {
+                        if (getG(curPoint, neighbor_node) < neighbor_node->G)
+                        {
+                            neighbor_node->parent == curPoint;
+                            neighbor_node->G = getG(curPoint,neighbor_node);
+                            neighbor_node->F = getF(neighbor_node);
+                        }
+                    }
+                }
+                else
+                {
+                    continue;
+                }
+            }
+        }
+
+
+    }while(!openList.empty());
+
+    /* ---------- open set empty, no path ---------- */
+    cout << "open set empty, no path!" << endl;
+    cout << "use node num: " << use_node_num << endl;
+    cout << "iter num: " << iter_num << endl;
+    return NO_PATH;
+}
+
+
+vector<Eigen::Vector2f> Astar::GetPath()
+{
+
+    vector<Eigen::Vector2f> path;
+
+    for (int i(0); i < path_nodes.size(); i++)
     {
-        cout<<"result: "<<result->x<<" "<<result->y<<endl;
+        path.push_back(path_nodes[i]->pos);
+        outfile <<"(" << path_nodes[i]->pos(0)<<","<<path_nodes[i]->pos(1)<<")"<<endl;
     }
-    else
-    {
-        cout <<"wrong occur***************空指针**********************"<<endl;
-    }
-
-    list<Point*> path;
-    outfile <<"path-result:"<<endl;
-
-    while(result)
-    {
-        outfile <<"("<<result->x<<","<<result->y<<")"<<"  ";
-        path.push_front(result);
-        result = result->parent;
-    }
-    outfile <<endl;
-    //清空列表
-    std::priority_queue<Point*, vector<Point*>, NodeComparator> empty_queue;
-    openList.swap(empty_queue);
-
+    outfile <<"*****************************************************"<<endl;
     return path;
 }
 
 
 //判断是否可以到达
-bool Astar::isCanreach(const Point* curPoint, const Point* targetPoint,bool isIgnoreCorner) const
+bool Astar::isCanreach(const Point* curPoint, const Eigen::Vector2f& targetPoint,bool isIgnoreCorner) const
 {
 
-    if(targetPoint->x <0 || targetPoint->x > map1.size() - 1 ||
-       targetPoint->y <0 || targetPoint->y > map1[0].size() -1 ||
-
-       (curPoint->x == targetPoint->x && curPoint->y == targetPoint->y)
-
-       || map1[targetPoint->x][targetPoint->y] == 100
-       || targetPoint->point_State == IN_CLOSE_SET )
+    // if(targetPoint(0) <0 || targetPoint(0) > map1.size() - 1 ||
+    //    targetPoint(1) <0 || targetPoint(1) > map1[0].size() -1 ||
+    if(targetPoint(0) <0 || targetPoint(0) > map1[0].size() - 1 ||
+    targetPoint(1) <0 || targetPoint(1) > map1.size() -1 ||
+        (curPoint->x == targetPoint(0) && curPoint->y == targetPoint(1))
+       || map1[targetPoint(0)][targetPoint(1)] == 100
+       )
     {
         return false;
     }
     else
     {
-        if(fabs(curPoint->x - targetPoint->x) + fabs(curPoint->y - targetPoint->y) == 1)
-        {
-            return true;
-        }
-        else
-        {
-            //判断斜对角是否被绊住 应该有四个斜对角 四种case
-            if(map1[curPoint->x][curPoint->y+1] ==100&&\
-            ( (curPoint->x+1 == targetPoint->x&&curPoint->y+1 == targetPoint->y) 
-            ||(curPoint->x-1 == targetPoint->x&&curPoint->y+1 == targetPoint->y) 
-            ) )
-            {
-                return isIgnoreCorner;
-            }
-            else if(map1[curPoint->x][curPoint->y-1] ==100&&\
-            ( (curPoint->x-1 == targetPoint->x&&curPoint->y-1 == targetPoint->y) 
-            ||(curPoint->x+1 == targetPoint->x&&curPoint->y-1 == targetPoint->y) 
-            ) )
-            {
-                return isIgnoreCorner;
-            }
-            else if(map1[curPoint->x-1][curPoint->y] ==100&&\
-            ( (curPoint->x-1 == targetPoint->x&&curPoint->y+1 == targetPoint->y) 
-            ||(curPoint->x-1 == targetPoint->x&&curPoint->y-1 == targetPoint->y) 
-            ) )
-            {
-                return isIgnoreCorner;
-            }
-            else if(map1[curPoint->x+1][curPoint->y] ==100&&\
-            ( (curPoint->x+1 == targetPoint->x&&curPoint->y+1 == targetPoint->y) 
-            ||(curPoint->x+1 == targetPoint->x&&curPoint->y-1 == targetPoint->y) 
-            ) )
-            {
-                return isIgnoreCorner;
-            }
-            else
-            {
-                return true;
-            }
+        return true;
+        // if(fabs(curPoint->x - targetPoint(0)) + fabs(curPoint->y - targetPoint(1)) == 1)
+        // {
+        //     return true;
+        // }
+        // else
+        // {
+        //     //判断斜对角是否被绊住 应该有四个斜对角 四种case
+        //     if(map1[curPoint->x][curPoint->y+1] ==100&&\
+        //     ( (curPoint->x+1 == targetPoint(0)&&curPoint->y+1 == targetPoint(1)) 
+        //     ||(curPoint->x-1 == targetPoint(0)&&curPoint->y+1 == targetPoint(1)) 
+        //     ) )
+        //     {
+        //         return isIgnoreCorner;
+        //     }
+        //     else if(map1[curPoint->x][curPoint->y-1] ==100&&\
+        //     ( (curPoint->x-1 == targetPoint(0)&&curPoint->y-1 == targetPoint(1)) 
+        //     ||(curPoint->x+1 == targetPoint(0)&&curPoint->y-1 == targetPoint(1)) 
+        //     ) )
+        //     {
+        //         return isIgnoreCorner;
+        //     }
+        //     else if(map1[curPoint->x-1][curPoint->y] ==100&&\
+        //     ( (curPoint->x-1 == targetPoint(0)&&curPoint->y+1 == targetPoint(1)) 
+        //     ||(curPoint->x-1 == targetPoint(0)&&curPoint->y-1 == targetPoint(1)) 
+        //     ) )
+        //     {
+        //         return isIgnoreCorner;
+        //     }
+        //     else if(map1[curPoint->x+1][curPoint->y] ==100&&\
+        //     ( (curPoint->x+1 == targetPoint(0)&&curPoint->y+1 == targetPoint(1)) 
+        //     ||(curPoint->x+1 == targetPoint(0)&&curPoint->y-1 == targetPoint(1)) 
+        //     ) )
+        //     {
+        //         return isIgnoreCorner;
+        //     }
+        //     else
+        //     {
+        //         return true;
+        //     }
 
-        }
+        // }
     }
-}
-vector<Point*> Astar::getSurroundPoint(const Point* curPoint,bool isIgnoreCorner ) const
-{
-
-    vector<Point*> surroundpoints;
-
-    for(int x = curPoint->x - 1; x<=curPoint->x + 1;x++)
-    {
-        for(int y = curPoint->y - 1; y<=curPoint->y + 1;y++)
-        {
-            if( isCanreach(curPoint,new Point(x,y), isIgnoreCorner) )
-            {
-                surroundpoints.emplace_back(new Point(x,y));
-            }
-        }
-    }
-
-    return surroundpoints;
 }

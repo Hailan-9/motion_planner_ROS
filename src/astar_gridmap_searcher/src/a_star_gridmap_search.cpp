@@ -18,8 +18,11 @@
 
 
 using namespace std;
+using namespace A_Star;
 std::ofstream outfile;
-
+bool init_finish = false;
+// 定义全局变量
+Astar astar;
 
 
 int main(int argc, char *argv[])
@@ -37,7 +40,7 @@ int main(int argc, char *argv[])
     /* code */
     setlocale(LC_ALL,"");
     ros::init(argc, argv, "astar_node");
-    // 节点和参数私有，参考其命名空间与节点名称
+    // 话题和参数私有，参考其命名空间与节点名称！
     ros::NodeHandle nh("~");
 
     ROS_INFO("init----1");
@@ -49,7 +52,7 @@ int main(int argc, char *argv[])
 
     astar_MapSub = nh.subscribe("/map",1,mapCallback);// 订阅栅格地图
     initPoseSub = nh.subscribe("/initialpose",1,initPoseCallback);// 订阅起点
-    goalPoseSub = nh.subscribe("/move_base_simple/goal",1,goalPoseCallback);// 订阅目标点
+    goalPoseSub = nh.subscribe<geometry_msgs::PoseStamped>("/move_base_simple/goal", 1, boost::bind(goalPoseCallback, _1, nh));// 订阅目标点
 
     ROS_INFO("init----2");
     
@@ -69,12 +72,12 @@ int main(int argc, char *argv[])
 
 
 /**************************函数定义********************************/
-// 无
+
 // 世界坐标系（也就是地图坐标系）-->栅格地图坐标系
-Eigen::Vector2d world2Gridmap(double w_x, double w_y)
+Eigen::Vector2f world2Gridmap(float w_x, float w_y)
 {
     // ROS_INFO("function---world2Gridmap----");
-    Eigen::Vector2d result;
+    Eigen::Vector2f result;
     if (w_x < origin_x || w_y < origin_y)
     {
         result << -1,-1;
@@ -90,12 +93,12 @@ Eigen::Vector2d world2Gridmap(double w_x, double w_y)
         return result;
     }
 }
-// 无
+
 // 栅格地图坐标系-->世界坐标系（也就是地图坐标系）
-Eigen::Vector2d gridmap2World(double gm_x, double gm_y)
+Eigen::Vector2f gridmap2World(float gm_x, float gm_y)
 {
     // ROS_INFO("function---gridmap2World----");
-    Eigen::Vector2d result;
+    Eigen::Vector2f result;
     if (gm_x > width || gm_y > height)
     {
         cout <<"-111111111111111111111111"<<endl;
@@ -103,8 +106,8 @@ Eigen::Vector2d gridmap2World(double gm_x, double gm_y)
         return result;
     }
 
-    double temp_x = gm_x * resolution + origin_x;
-    double temp_y = gm_y * resolution + origin_y;
+    float temp_x = gm_x * resolution + origin_x;
+    float temp_y = gm_y * resolution + origin_y;
 
     if (temp_x > origin_x && temp_y > origin_y)
     {
@@ -113,7 +116,7 @@ Eigen::Vector2d gridmap2World(double gm_x, double gm_y)
     }
 }
 // 路径搜索是在（二维）栅格地图下进行搜索的
-void startFindPath()
+void startFindPath(const ros::NodeHandle& nh)
 {
     ROS_INFO("startFindPath------------");
     // 获得起点 终点------栅格地图坐标系下
@@ -127,28 +130,40 @@ void startFindPath()
 
     cout <<"*****Start find path with Astar*****"<<endl;
 
-    Astar astar;
 
     // 时间
     Algorithm_Timer algorithm_Timer;
     algorithm_Timer.begin();
+    astar.setParam(nh);
 
-    astar.InitAstar(mapData);
-    list<Point*> path = astar.GetPath(astar_Start,astar_Goal,false);
+    if (!init_finish)
+    {
+        astar.InitAstar(mapData);
+        astar.init();
+        init_finish = true;
+    }
 
-    std::string astar_task = "Astar_search";
-    algorithm_Timer.end(astar_task);
-    
-    Eigen::Vector2d temp_p;
-    if (path.empty())
+
+    astar.reset();
+
+
+
+
+    int search_success = astar.searchPath(astar_Start, astar_Goal,1);
+
+
+    if(search_success == REACH_END)
     {
-        ROS_WARN("Astar算法没能找到路径-----");
+        pathPoint = astar.GetPath();
+
+        std::string astar_task = "Astar_search";
+        algorithm_Timer.end(astar_task);
     }
-    for(const auto &p : path)
+    else
     {
-        temp_p <<p->x, p->y;
-        pathPoint.emplace_back(temp_p);
+        ROS_WARN("failed to search-----------");
     }
+
 
     publishPath();
 }
@@ -205,9 +220,9 @@ void initPoseCallback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& 
     node_vis.color.g = 0.0;
     node_vis.color.b = 0.0;
 
-    node_vis.scale.x = resolution * 1;
-    node_vis.scale.y = resolution * 1;
-    node_vis.scale.z = resolution * 1;
+    node_vis.scale.x = resolution * 0.05;
+    node_vis.scale.y = resolution * 0.05;
+    node_vis.scale.z = resolution * 0;
 
     geometry_msgs::Point pt;
     pt.x = msgPtr->pose.pose.position.x;
@@ -224,7 +239,7 @@ void initPoseCallback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& 
     }
 
 }
-void goalPoseCallback(const geometry_msgs::PoseStamped::ConstPtr& msgPtr)
+void goalPoseCallback(const geometry_msgs::PoseStamped::ConstPtr& msgPtr, const ros::NodeHandle& nh)
 {
     ROS_INFO("goalCallback-----------------");
     visualization_msgs::Marker node_vis;
@@ -244,9 +259,9 @@ void goalPoseCallback(const geometry_msgs::PoseStamped::ConstPtr& msgPtr)
     node_vis.color.g = 0.0;
     node_vis.color.b = 1.0;
 
-    node_vis.scale.x = resolution * 1;
-    node_vis.scale.y = resolution * 1;
-    node_vis.scale.z = resolution * 1;
+    node_vis.scale.x = resolution * 0.05;
+    node_vis.scale.y = resolution * 0.05;
+    node_vis.scale.z = resolution * 0;
 
     geometry_msgs::Point pt;
     pt.x = msgPtr->pose.position.x;
@@ -263,7 +278,7 @@ void goalPoseCallback(const geometry_msgs::PoseStamped::ConstPtr& msgPtr)
     }
     else
     {
-        startFindPath();
+        startFindPath(nh);
     }
 }
 
@@ -277,7 +292,7 @@ void publishPath()
     // astar_PathPub.publish(empty_pathmsg);
 
     nav_msgs::Path astarPathMsg;
-    Eigen::Vector2d res_pos;
+    Eigen::Vector2f res_pos;
     for (int i = 0; i < pathPoint.size(); i++)
     {
         geometry_msgs::PoseStamped pathPose;

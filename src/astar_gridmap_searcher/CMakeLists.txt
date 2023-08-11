@@ -1,6 +1,11 @@
 cmake_minimum_required(VERSION 3.0.2)
 project(astar_gridmap_searcher)
 
+# 开启GDB调试
+SET(CMAKE_BUILD_TYPE "Debug")
+SET(CMAKE_CXX_FLAGS_DEBUG "$ENV{CXXFLAGS} -O0 -Wall -g -ggdb")
+SET(CMAKE_CXX_FLAGS_RELEASE "$ENV{CXXFLAGS} -O3 -Wall")
+
 message(STATUS "This is a package for generating search waypoint via Astar")
 message(STATUS "author 海蓝")
 message(STATUS "${PROJECT_NAME}")
