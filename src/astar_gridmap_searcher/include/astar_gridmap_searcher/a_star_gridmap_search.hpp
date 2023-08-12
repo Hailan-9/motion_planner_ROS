@@ -34,16 +34,19 @@
 float origin_x = 0.0;
 float origin_y = 0.0;
 // 单位 cells 也就是格子数
-int width = 0;
-int height = 0;
+// int width = 0;
+// int height = 0;
+Eigen::Vector2f map_size;
+Eigen::Vector2f map_origin;
 // 单位 m/cell
 float resolution = 0.0;
 
 // 地图数据使用二维数组来表示
 std::vector<std::vector<int>> mapData;
-// astar算法的起点 终点 在栅格地图下的
+// astar算法的起点 终点 在世界地图下的 map
 Eigen::Vector2f startPoint;
 Eigen::Vector2f goalPoint;
+// 世界地图坐标系下
 std::vector<Eigen::Vector2f> pathPoint;
 
 ros::Publisher astar_PathPub;
@@ -55,18 +58,12 @@ ros::Subscriber initPoseSub;
 ros::Subscriber goalPoseSub;
 
 
-// 函数声明
-// 世界坐标系（也就是地图坐标系）-->栅格地图坐标系
-Eigen::Vector2f world2Gridmap(float w_x, float w_y);
-// 栅格地图坐标系-->世界坐标系（也就是地图坐标系）
-Eigen::Vector2f gridmap2World(float gm_x, float gm_y);
-
 void startFindPath();
 
 void mapCallback(const nav_msgs::OccupancyGrid::ConstPtr& msgPtr);
 
 void initPoseCallback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msgPtr);
-void goalPoseCallback(const geometry_msgs::PoseStamped::ConstPtr& msgPtr, const ros::NodeHandle& nh);
+void goalPoseCallback(const geometry_msgs::PoseStamped::ConstPtr& msgPtr, ros::NodeHandle& nh);
 
 void publishPath();
 

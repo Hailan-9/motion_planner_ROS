@@ -9,7 +9,12 @@
 #include <queue>
 #include <Eigen/Dense>
 #include <ros/ros.h>
-
+#include <visualization_msgs/MarkerArray.h>
+#include <visualization_msgs/Marker.h>
+#include <geometry_msgs/PoseStamped.h>
+#include <geometry_msgs/Pose.h>
+#include <geometry_msgs/Quaternion.h>
+#include <geometry_msgs/PoseWithCovarianceStamped.h>
 #include <unordered_map>
 #include <boost/functional/hash.hpp>
 
@@ -40,9 +45,18 @@ enum
     NO_PATH = 2
 };
 
-// 变量均基于栅格地图
+enum
+{
+    // 认为可以斜向移动
+    EUCLIDEAN_DISTANCE = 1,
+    // 认为只能进行前后左右移动
+    MANHATTAN_DISTANCE = 2,
+    DIAGONAL_DISTANCE =3
+};
+
 struct Point
 {
+    // 以下变量均基于栅格地图
     float x;
     float y;
     float F, G, H;
@@ -72,6 +86,19 @@ struct Point
         point_State = NOT_EXPAND;
     }
     ~Point() {};
+
+
+    // 以下变量均基于世界地图即map
+    float w_x, w_y;
+    Eigen::Vector2f w_pos;
+    void set_w_pos(Eigen::Vector2f w_pos_)
+    {
+        w_pos = w_pos_;
+        w_x = w_pos_(0);
+        w_y = w_pos_(1);
+    }
+
+
 };
 
 typedef Point* PointPtr;
@@ -167,12 +194,12 @@ class Astar
     public:
         Astar() {};//构造函数声明和定义，空定义
         ~Astar();//析构函数声明
-        void setParam(const ros::NodeHandle& nh);
+        void setParam(ros::NodeHandle& nh);
         //搜索路径 因为searchPath函数需要修改openlist和closelist 所以不能是常量成员函数 也就是不能在最后+ const
         int searchPath(Point& startPoint, Point& endPoint, bool isIgnoreCorner);
-        // 得到只有位置的路径点
+        // 得到只有位置的路径点 并且已经从栅格坐标系转换为了世界坐标系
         vector<Eigen::Vector2f>  GetPath();
-        void InitAstar(const vector<vector<int>> &_map);
+        void InitAstar(const vector<vector<int>> &_map, Eigen::Vector2f origin);
         void init();
         void reset();
         //isIgnoreCorner 是否可以绊住情况下对角线通过
@@ -191,6 +218,12 @@ class Astar
         bool isCanreach(const Point* curPoint,const Eigen::Vector2f& targetPoint, bool isIgnoreCorner) const;
         void retrievePath(PointPtr end_node);
 
+        // 函数声明
+        // 世界坐标系（也就是地图坐标系）-->栅格地图坐标系
+        Eigen::Vector2f world2Gridmap(float w_x, float w_y);
+        // 栅格地图坐标系-->世界坐标系（也就是地图坐标系）
+        Eigen::Vector2f gridmap2World(float gm_x, float gm_y);
+
 
 
         /* ------------------main data structure------------------ */
@@ -208,11 +241,31 @@ class Astar
         // 存储前端搜索得到的路径点 point类型
         vector<PointPtr> path_nodes;
 
+        int test_num;
+
         /* ------------------parameter------------------ */
         double weight_g;
         double weight_h;
         // 资源池分配的容量，也就是手动开辟节点指针的个数 new
         int allocate_num;
+        // 使得搜索有一定的倾向性
+        double tie_breaker;
+        int Heuristic_Options;
+        // 地图信息
+        // 栅格地图分辨率 单位 m/cell
+        double resolution;
+        // 单位 cells 也就是格子数 宽 高
+        Eigen::Vector2f map_size;
+        // 单位 m
+        // 栅格地图坐标系原点相对于世界坐标系原点的位置 x y
+        Eigen::Vector2f map_origin;
+
+
+        visualization_msgs::Marker node_visited_visual;
+        visualization_msgs::Marker node_closed_visual;
+
+        ros::Publisher node_visited_Pub;
+        ros::Publisher node_closed_Pub;
 
 };
 

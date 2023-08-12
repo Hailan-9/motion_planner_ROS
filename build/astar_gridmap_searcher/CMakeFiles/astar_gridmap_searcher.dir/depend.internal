@@ -288,6 +288,13 @@ astar_gridmap_searcher/CMakeFiles/astar_gridmap_searcher.dir/src/a_star_gridmap_
 astar_gridmap_searcher/CMakeFiles/astar_gridmap_searcher.dir/src/astar.cpp.o
  /home/zs/motion_planner/src/astar_gridmap_searcher/include/astar_gridmap_searcher/astar.hpp
  /home/zs/motion_planner/src/astar_gridmap_searcher/src/astar.cpp
+ /opt/ros/noetic/include/geometry_msgs/Point.h
+ /opt/ros/noetic/include/geometry_msgs/Pose.h
+ /opt/ros/noetic/include/geometry_msgs/PoseStamped.h
+ /opt/ros/noetic/include/geometry_msgs/PoseWithCovariance.h
+ /opt/ros/noetic/include/geometry_msgs/PoseWithCovarianceStamped.h
+ /opt/ros/noetic/include/geometry_msgs/Quaternion.h
+ /opt/ros/noetic/include/geometry_msgs/Vector3.h
  /opt/ros/noetic/include/ros/advertise_options.h
  /opt/ros/noetic/include/ros/advertise_service_options.h
  /opt/ros/noetic/include/ros/assert.h
@@ -306,6 +313,7 @@ astar_gridmap_searcher/CMakeFiles/astar_gridmap_searcher.dir/src/astar.cpp.o
  /opt/ros/noetic/include/ros/message.h
  /opt/ros/noetic/include/ros/message_event.h
  /opt/ros/noetic/include/ros/message_forward.h
+ /opt/ros/noetic/include/ros/message_operations.h
  /opt/ros/noetic/include/ros/message_traits.h
  /opt/ros/noetic/include/ros/names.h
  /opt/ros/noetic/include/ros/node_handle.h
@@ -343,6 +351,10 @@ astar_gridmap_searcher/CMakeFiles/astar_gridmap_searcher.dir/src/astar.cpp.o
  /opt/ros/noetic/include/ros/wall_timer.h
  /opt/ros/noetic/include/ros/wall_timer_options.h
  /opt/ros/noetic/include/rosconsole/macros_generated.h
+ /opt/ros/noetic/include/std_msgs/ColorRGBA.h
+ /opt/ros/noetic/include/std_msgs/Header.h
+ /opt/ros/noetic/include/visualization_msgs/Marker.h
+ /opt/ros/noetic/include/visualization_msgs/MarkerArray.h
  /opt/ros/noetic/include/xmlrpcpp/XmlRpcDecl.h
  /opt/ros/noetic/include/xmlrpcpp/XmlRpcValue.h
  /usr/include/eigen3/Eigen/Cholesky

@@ -3,6 +3,8 @@
 #include <math.h>
 #include "astar_gridmap_searcher/astar.hpp"
 extern std::ofstream outfile;
+extern std::ofstream outfile1;
+
 using namespace A_Star;
 
 Astar::~Astar()
@@ -12,7 +14,6 @@ Astar::~Astar()
         delete path_node_pool[i];
     }
     cout <<"执行astar析构函数---------"<<endl;
-
 }
 
 void Astar::init()
@@ -26,21 +27,69 @@ void Astar::init()
     }
     use_node_num = 0;
     iter_num = 0;
+
+
+    // closeset中的节点可视化
+    // 绿色
+    node_visited_visual.header.frame_id = "map";
+    node_visited_visual.header.stamp = ros::Time::now();
+    node_visited_visual.type = visualization_msgs::Marker::CUBE_LIST;
+    node_visited_visual.action = visualization_msgs::Marker::ADD;
+    node_visited_visual.id = 2;
+
+    node_visited_visual.pose.orientation.x = 0.0;
+    node_visited_visual.pose.orientation.y = 0.0;
+    node_visited_visual.pose.orientation.z = 0.0;
+    node_visited_visual.pose.orientation.w = 1.0;
+
+    node_visited_visual.color.a = 1.0;
+    node_visited_visual.color.r = 0.0;
+    node_visited_visual.color.g = 1.0;
+    node_visited_visual.color.b = 0.0;
+
+    node_visited_visual.scale.x = resolution * 1;
+    node_visited_visual.scale.y = resolution * 1;
+    node_visited_visual.scale.z = resolution * 0.001;
+
+    // 蓝色
+    node_closed_visual.header.frame_id = "map";
+    node_closed_visual.header.stamp = ros::Time::now();
+    node_closed_visual.type = visualization_msgs::Marker::CUBE_LIST;
+    node_closed_visual.action = visualization_msgs::Marker::ADD;
+    node_closed_visual.id = 3;
+
+    node_closed_visual.pose.orientation.x = 0.0;
+    node_closed_visual.pose.orientation.y = 0.0;
+    node_closed_visual.pose.orientation.z = 0.0;
+    node_closed_visual.pose.orientation.w = 1.0;
+
+    node_closed_visual.color.a = 1.0;
+    node_closed_visual.color.r = 0.0;
+    node_closed_visual.color.g = 0.0;
+    node_closed_visual.color.b = 1.0;
+
+    node_closed_visual.scale.x = resolution * 1;
+    node_closed_visual.scale.y = resolution * 1;
+    node_closed_visual.scale.z = resolution * 0.001;
+
+
 }
 
 void Astar::reset()
 {
+    cout <<"reset----"<<endl;
+    test_num = 0;
     expanded_nodes.clear();
     path_nodes.clear();
+
+    node_visited_visual.points.clear();
+    node_closed_visual.points.clear();
+
     std::priority_queue<Point*, vector<Point*>, NodeComparator> empty_queue;
     openList.swap(empty_queue);
     // 被探索过的每个节点地址都是固定的 牛
-    cout <<"reset----"<<endl;
-    cout <<"use_node_num:"<<use_node_num<<endl;
-    cout <<"iter_num:"<<iter_num<<endl;
-
-    cout <<"capacity:"<<path_node_pool.capacity()<<endl;
-    cout <<"size:"<<path_node_pool.size()<<endl;
+    // cout <<"capacity:"<<path_node_pool.capacity()<<endl;
+    // cout <<"size:"<<path_node_pool.size()<<endl;
 
 
     for (int i=0; i < use_node_num; i++)
@@ -52,30 +101,42 @@ void Astar::reset()
 
     use_node_num = 0;
     iter_num = 0;
+
 }
 
 // todolist这个地方有点问题 参数没有传入
-void Astar::setParam(const ros::NodeHandle& nh)
+void Astar::setParam(ros::NodeHandle& nh)
 {
     nh.param("astar_node/allocate_num", allocate_num, 10000);
+    nh.param("astar_node/resolution", resolution, 0.05);
+
+    tie_breaker = 1.0 + 1.0 / 1000;
+    // Heuristic_Options = EUCLIDEAN_DISTANCE;
+    Heuristic_Options = MANHATTAN_DISTANCE;
+
+    
+    node_visited_Pub = nh.advertise<visualization_msgs::Marker>("node_visited",1);
+    node_closed_Pub = nh.advertise<visualization_msgs::Marker>("node_closed",1);
+
     cout <<"param set finish-------------:"<<allocate_num<<endl;
 }
 
 
-void Astar::InitAstar(const vector<vector<int>> &_map)
+void Astar::InitAstar(const vector<vector<int>> &_map, Eigen::Vector2f origin)
 {
     map1 = _map;
+    map_size << map1[0].size(), map1.size();
+    map_origin = origin;
 }
 
 // todolist---有关G的计算，之前算的有的问题，但是改过来了！
 //得到G
 float Astar::getG(Point *parentPoint, Point *curPoint)
 {
+    Eigen::Vector2f temp_vec = parentPoint->pos - curPoint->pos;
     float extraG;
     float parentG;
-    extraG = fabs(curPoint->x - parentPoint->x) + fabs(curPoint->y - parentPoint->y);
-    extraG = (extraG == 1) ? kCost_straight : kCost_diagonal;
-    // parentG = curPoint->parent == NULL ? 0 : curPoint->parent->G;
+    extraG = temp_vec.squaredNorm();
     parentG = parentPoint->G;
     return extraG + parentG;
 }
@@ -84,8 +145,20 @@ float Astar::getG(Point *parentPoint, Point *curPoint)
 float Astar::getH(Point *curPoint,Point *endPoint)
 {
     float costH;
-    costH = pow( (curPoint->x - endPoint->x),2) + pow( (curPoint->y - endPoint->y),2);
-    return sqrt(costH);
+    Eigen::Vector2f temp_vec = endPoint->pos - curPoint->pos;
+    switch (Heuristic_Options)
+    {
+        case EUCLIDEAN_DISTANCE:
+            // 欧几里得、平方欧几里德方法
+            costH = temp_vec.norm();
+            // 平方欧几里德方法
+            // 计算机计算平方根比较耗时间
+            return tie_breaker * costH;
+
+        case MANHATTAN_DISTANCE:
+            return tie_breaker * (fabs(temp_vec(0)) + fabs(temp_vec(1)));
+
+    }
 }
 
 //得到F
@@ -108,13 +181,86 @@ void Astar::retrievePath(PointPtr end_node)
 }
 
 
+
+
+// 世界坐标系（也就是地图坐标系）-->栅格地图坐标系
+Eigen::Vector2f Astar::world2Gridmap(float w_x, float w_y)
+{
+    // ROS_INFO("function---world2Gridmap----");
+    Eigen::Vector2f result;
+    if (w_x < map_origin(0) || w_y < map_origin(1))
+    {
+        result << -1,-1;
+        return result;
+    }
+
+    int temp_x = int((w_x - map_origin(0)) / resolution);
+    int temp_y = int((w_y - map_origin(1)) / resolution);
+
+    if (temp_x < map_size(0) && temp_y < map_size(1))
+    {
+        result << temp_x,temp_y;
+        return result;
+    }
+}
+
+// 栅格地图坐标系-->世界坐标系（也就是地图坐标系）
+Eigen::Vector2f Astar::gridmap2World(float gm_x, float gm_y)
+{
+    // ROS_INFO("function---gridmap2World----");
+    Eigen::Vector2f result;
+    if (gm_x > map_size(0) || gm_y > map_size(1))
+    {
+        cout <<"-111111111111111111111111"<<endl;
+        result << -1, -1;
+        return result;
+    }
+
+    float temp_x = gm_x * resolution + map_origin(0);
+    float temp_y = gm_y * resolution + map_origin(1);
+
+    if (temp_x > map_origin(0) && temp_y > map_origin(1))
+    {
+        result << temp_x, temp_y;
+        return result;
+    }
+}
+
+
+
 int Astar::searchPath(Point& startPoint, Point& endPoint, bool isIgnoreCorner)
 {
+
+    // 开放列表中未被访问过的节点的可视化。
+    // 也就是在开放列表中，每次循环中，未被作为f值最小的节点弹出来的。弹出来的就是被扩展了expanded，进closeset中
+    
+    
+
+
+
+    // 坐标系转换
+    startPoint.set_pos(world2Gridmap(startPoint.w_x,startPoint.w_y)(0),
+    world2Gridmap(startPoint.w_x,startPoint.w_y)(1));
+
+    endPoint.set_pos(world2Gridmap(endPoint.w_x,endPoint.w_y)(0),
+    world2Gridmap(endPoint.w_x,endPoint.w_y)(1));
+
+    cout <<"gridmap frame---start: "<<startPoint.x<<","<<startPoint.y<<endl;
+
+    cout <<"gridmap frame---goal: "<<endPoint.x<<","<<endPoint.y<<endl;
+
+
+    geometry_msgs::Point node_closed_point;
+    geometry_msgs::Point node_visited_point;
+
+
     // 首先是起始点添加进openlist
     Point* curPoint = path_node_pool[0];
     curPoint->x = startPoint.x;
     curPoint->y = startPoint.y;
     curPoint->pos = startPoint.pos;
+    curPoint->set_w_pos(startPoint.w_pos);
+
     curPoint->G = 0;
     curPoint->H = getH(curPoint,&endPoint);
     curPoint->F = getF(curPoint);
@@ -128,6 +274,17 @@ int Astar::searchPath(Point& startPoint, Point& endPoint, bool isIgnoreCorner)
     do{
         // 寻找开启列表中F值最低的点，称其为当前点
         curPoint = openList.top();
+
+        /* -------------显示closeset中的节点---这里使用世界地图坐标系下------------- */
+        // curPoint->set_w_pos(gridmap2World(curPoint->x, curPoint->y));
+        node_closed_point.x = curPoint->w_x + resolution * 0.5;
+        node_closed_point.y = curPoint->w_y + resolution * 0.5;
+
+        node_closed_visual.points.emplace_back(node_closed_point);
+        node_closed_Pub.publish(node_closed_visual);
+
+
+
         /* -----------------Determine if the destination has been reached--------------------- */
         bool reach_goal = abs(curPoint->x - endPoint.x) <=1 && abs(curPoint->y - endPoint.y) <=1;
         if(reach_goal)
@@ -136,6 +293,10 @@ int Astar::searchPath(Point& startPoint, Point& endPoint, bool isIgnoreCorner)
             cout <<"path search success!!!!!!"<<endl;
             cout << "use node num: " << use_node_num << endl;
             cout << "iter num: " << iter_num << endl;
+            cout <<"node_visited_num: "<<node_visited_visual.points.size()<<endl;
+            cout <<"node_closed_num: "<<node_closed_visual.points.size()<<endl;
+            cout <<"test_num: "<<test_num<<endl;
+
             return REACH_END;
         }
 
@@ -161,6 +322,7 @@ int Astar::searchPath(Point& startPoint, Point& endPoint, bool isIgnoreCorner)
                     // 不在openlist中
                     if (neighbor_node == NULL)
                     {
+
                         neighbor_node = path_node_pool[use_node_num];
                         neighbor_node->parent = curPoint;
                         neighbor_node->set_pos(x, y);
@@ -168,9 +330,18 @@ int Astar::searchPath(Point& startPoint, Point& endPoint, bool isIgnoreCorner)
                         neighbor_node->H = getH(neighbor_node,&endPoint);
                         neighbor_node->F = getF(neighbor_node);
                         neighbor_node->point_State = IN_OPEN_SET;
+                        neighbor_node->set_w_pos(gridmap2World(neighbor_node->x, neighbor_node->y));
 
                         openList.push(neighbor_node);
                         expanded_nodes.insert(neighbor_node->pos, neighbor_node);
+
+
+                        /* -----------------显示探索的节点------------------*/
+                        node_visited_point.x = neighbor_node->w_x + resolution * 0.5;
+                        node_visited_point.y = neighbor_node->w_y + resolution * 0.5;
+
+
+
 
                         use_node_num += 1;
 
@@ -179,14 +350,17 @@ int Astar::searchPath(Point& startPoint, Point& endPoint, bool isIgnoreCorner)
                             cout <<"***run out of node_pool memory***" <<endl;
                             cout <<"use_node_num: "<<use_node_num<<endl;
                             cout <<"iterm_num: "<<iter_num<<endl;
-
+                            cout <<"node_visited_num: "<<node_visited_visual.points.size()<<endl;
+                            cout <<"node_closed_num: "<<node_closed_visual.points.size()<<endl;
+                            cout <<"test_num: "<<test_num<<endl;
                             return NO_PATH;
                         }
                     }
                     else if(neighbor_node->point_State == IN_OPEN_SET)
                     {
                         if (getG(curPoint, neighbor_node) < neighbor_node->G)
-                        {
+                        {   
+                            test_num++;
                             neighbor_node->parent == curPoint;
                             neighbor_node->G = getG(curPoint,neighbor_node);
                             neighbor_node->F = getF(neighbor_node);
@@ -213,13 +387,14 @@ int Astar::searchPath(Point& startPoint, Point& endPoint, bool isIgnoreCorner)
 
 vector<Eigen::Vector2f> Astar::GetPath()
 {
-
+    Eigen::Vector2f offset_pos;
+    offset_pos << resolution * 0.5, resolution * 0.5;
     vector<Eigen::Vector2f> path;
 
     for (int i(0); i < path_nodes.size(); i++)
     {
-        path.push_back(path_nodes[i]->pos);
-        outfile <<"(" << path_nodes[i]->pos(0)<<","<<path_nodes[i]->pos(1)<<")"<<endl;
+        path.push_back(path_nodes[i]->w_pos + offset_pos);
+        outfile <<"(" << path_nodes[i]->w_pos(0)<<","<<path_nodes[i]->w_pos(1)<<")"<<endl;
     }
     outfile <<"*****************************************************"<<endl;
     return path;
