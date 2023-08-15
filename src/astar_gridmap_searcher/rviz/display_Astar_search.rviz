@@ -10,7 +10,6 @@ Panels:
         - /Marker_goal1
         - /Marker_start1
         - /Marker_closed1
-        - /Marker_visited1
       Splitter Ratio: 0.5
     Tree Height: 1079
   - Class: rviz/Selection
@@ -143,17 +142,9 @@ Visualization Manager:
       Marker Topic: /astar_node/node_closed
       Name: Marker_closed
       Namespaces:
-        {}
+        "": true
       Queue Size: 100
       Value: true
-    - Class: rviz/Marker
-      Enabled: false
-      Marker Topic: /astar_node/node_visited
-      Name: Marker_visited
-      Namespaces:
-        {}
-      Queue Size: 100
-      Value: false
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -182,7 +173,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 15.857831954956055
+      Distance: 12.421456336975098
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -190,9 +181,9 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: 1.962668538093567
-        Y: 4.581503391265869
-        Z: -10.374831199645996
+        X: 4.905512809753418
+        Y: 5.291323661804199
+        Z: -10.234451293945312
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false

@@ -141,16 +141,28 @@ void mapCallback(const nav_msgs::OccupancyGrid::ConstPtr& msgPtr)
 
     resolution = msgPtr->info.resolution;
     map_size <<msgPtr->info.width, msgPtr->info.height;
+    map_origin << msgPtr->info.origin.position.x, msgPtr->info.origin.position.y;
 
-
-    for (int i = 0; i < map_size(1); i++)
+    // 地图宽
+    for (int i = 0; i < map_size(0); i++)
     {
         vector<int> temp_v;
-        for (int j = 0; j < map_size(0); j++)
+        // 地图高
+        for (int j = 0; j < map_size(1); j++)
         {
-            temp_v.emplace_back( int(msgPtr->data[i*map_size(0) + j]));
+            temp_v.emplace_back( int(msgPtr->data[j*map_size(0) + i]));
         }
         mapData.emplace_back(temp_v);
+    }
+
+    // 输出data信息
+    for (int i(0); i < map_size(1); i++)
+    {
+        for (int j(0); j < map_size(0); j++)
+        {
+            outfile1<< int(msgPtr->data[i*map_size(0) + j]) <<" ";
+        }
+        outfile1<<endl;
     }
 
 

@@ -29,28 +29,7 @@ void Astar::init()
     iter_num = 0;
 
 
-    // closeset中的节点可视化
-    // 绿色
-    node_visited_visual.header.frame_id = "map";
-    node_visited_visual.header.stamp = ros::Time::now();
-    node_visited_visual.type = visualization_msgs::Marker::CUBE_LIST;
-    node_visited_visual.action = visualization_msgs::Marker::ADD;
-    node_visited_visual.id = 2;
-
-    node_visited_visual.pose.orientation.x = 0.0;
-    node_visited_visual.pose.orientation.y = 0.0;
-    node_visited_visual.pose.orientation.z = 0.0;
-    node_visited_visual.pose.orientation.w = 1.0;
-
-    node_visited_visual.color.a = 1.0;
-    node_visited_visual.color.r = 0.0;
-    node_visited_visual.color.g = 1.0;
-    node_visited_visual.color.b = 0.0;
-
-    node_visited_visual.scale.x = resolution * 1;
-    node_visited_visual.scale.y = resolution * 1;
-    node_visited_visual.scale.z = resolution * 0.001;
-
+    // closeset中的节点可视化，即被访问过的节点的可视化
     // 蓝色
     node_closed_visual.header.frame_id = "map";
     node_closed_visual.header.stamp = ros::Time::now();
@@ -82,7 +61,7 @@ void Astar::reset()
     expanded_nodes.clear();
     path_nodes.clear();
 
-    node_visited_visual.points.clear();
+    // node_visited_visual.points.clear();
     node_closed_visual.points.clear();
 
     std::priority_queue<Point*, vector<Point*>, NodeComparator> empty_queue;
@@ -231,13 +210,6 @@ Eigen::Vector2f Astar::gridmap2World(float gm_x, float gm_y)
 int Astar::searchPath(Point& startPoint, Point& endPoint, bool isIgnoreCorner)
 {
 
-    // 开放列表中未被访问过的节点的可视化。
-    // 也就是在开放列表中，每次循环中，未被作为f值最小的节点弹出来的。弹出来的就是被扩展了expanded，进closeset中
-    
-    
-
-
-
     // 坐标系转换
     startPoint.set_pos(world2Gridmap(startPoint.w_x,startPoint.w_y)(0),
     world2Gridmap(startPoint.w_x,startPoint.w_y)(1));
@@ -272,6 +244,32 @@ int Astar::searchPath(Point& startPoint, Point& endPoint, bool isIgnoreCorner)
     expanded_nodes.insert(curPoint->pos,curPoint);
 
     do{
+
+//         // 开放列表中未被访问过的节点的可视化。
+//         // 也就是在开放列表中，每次循环中，未被作为f值最小的节点弹出来的。弹出来的就是被扩展了expanded，进closeset中
+    
+        // // 绿色
+        // node_visited_visual.header.frame_id = "map";
+        // node_visited_visual.header.stamp = ros::Time::now();
+        // node_visited_visual.type = visualization_msgs::Marker::CUBE_LIST;
+        // node_visited_visual.action = visualization_msgs::Marker::ADD;
+        // node_visited_visual.id = 2;
+
+        // node_visited_visual.pose.orientation.x = 0.0;
+        // node_visited_visual.pose.orientation.y = 0.0;
+        // node_visited_visual.pose.orientation.z = 0.0;
+        // node_visited_visual.pose.orientation.w = 1.0;
+
+        // node_visited_visual.color.a = 1.0;
+        // node_visited_visual.color.r = 0.0;
+        // node_visited_visual.color.g = 1.0;
+        // node_visited_visual.color.b = 0.0;
+
+        // node_visited_visual.scale.x = resolution * 1;
+        // node_visited_visual.scale.y = resolution * 1;
+        // node_visited_visual.scale.z = resolution * 0.001;
+
+
         // 寻找开启列表中F值最低的点，称其为当前点
         curPoint = openList.top();
 
@@ -293,7 +291,6 @@ int Astar::searchPath(Point& startPoint, Point& endPoint, bool isIgnoreCorner)
             cout <<"path search success!!!!!!"<<endl;
             cout << "use node num: " << use_node_num << endl;
             cout << "iter num: " << iter_num << endl;
-            cout <<"node_visited_num: "<<node_visited_visual.points.size()<<endl;
             cout <<"node_closed_num: "<<node_closed_visual.points.size()<<endl;
             cout <<"test_num: "<<test_num<<endl;
 
@@ -350,7 +347,6 @@ int Astar::searchPath(Point& startPoint, Point& endPoint, bool isIgnoreCorner)
                             cout <<"***run out of node_pool memory***" <<endl;
                             cout <<"use_node_num: "<<use_node_num<<endl;
                             cout <<"iterm_num: "<<iter_num<<endl;
-                            cout <<"node_visited_num: "<<node_visited_visual.points.size()<<endl;
                             cout <<"node_closed_num: "<<node_closed_visual.points.size()<<endl;
                             cout <<"test_num: "<<test_num<<endl;
                             return NO_PATH;
@@ -405,6 +401,11 @@ vector<Eigen::Vector2f> Astar::GetPath()
 bool Astar::isCanreach(const Point* curPoint, const Eigen::Vector2f& targetPoint,bool isIgnoreCorner) const
 {
 
+
+    if (map1[targetPoint(0)][targetPoint(1)] == 100)
+    {
+        ROS_WARN("warnning------- obstacle-----");
+    }
     // if(targetPoint(0) <0 || targetPoint(0) > map1.size() - 1 ||
     //    targetPoint(1) <0 || targetPoint(1) > map1[0].size() -1 ||
     if(targetPoint(0) <0 || targetPoint(0) > map1[0].size() - 1 ||
