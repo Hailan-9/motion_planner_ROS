@@ -1,6 +1,8 @@
 <launch>
     <!-- 动态参数 -->
+    <!-- roslaunch astar_gridmap_searcher run_Astar_searcher.launch allocate_num:=256 -->
     <!-- <arg name=""> -->
+
 
     <!-- 程序一运行就报段错误，加入gdb调试，进行debug -->
     <node pkg="rviz" type="rviz" name="rviz" args="-d $(find astar_gridmap_searcher)/rviz/display_Astar_search.rviz" />
@@ -11,9 +13,16 @@
     <node pkg="map_server" type="map_server" name="map_server" args="$(arg mapfile)" >
         <param name="frame_id" value="map" />
     </node>
-
+    
+    <!-- 在launch文件中设置参数，1、在node标签外是全局性质的，参考的是/
+    2、在node标签中设置参数，是私有性质的，这个时候句柄定义的时候也需要相对应地传入参数("~")，
+    参考的是/命名空间/节点名称 -->
     <node pkg="astar_gridmap_searcher" type="astar_gridmap_searcher" name="astar_node" output="screen" >
-        <param name="allocate_num" value="10000" />
+        <!-- 最方便的设置参数的方法就是加载yaml -->
+        <rosparam command="load" file="$(find astar_gridmap_searcher)/params.yaml" />
+        <!-- 下面这种用法是用到了arg动态传参，和加载yaml文件无关 -->
+        <!-- <param name="allocate_num" value="$(arg allocate_num)" /> -->
+        <!-- <param name="heuristic_options" value="$(arg heuristic_options)" /> -->
     </node>
 
     <!-- /map /odom: 这两个参数表示这个静态变换是将/odom坐标系（第二个参数）相对于/map坐标系（第一个参数）进行描述。

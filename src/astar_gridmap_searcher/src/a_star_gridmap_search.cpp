@@ -23,6 +23,8 @@ std::ofstream outfile;
 std::ofstream outfile1;
 
 bool init_finish = false;
+#define Test_heuristic_functions_separately
+
 // 定义全局变量
 Astar astar;
 
@@ -84,6 +86,7 @@ int main(int argc, char *argv[])
 
 
 // 路径搜索是在（二维）栅格地图下进行搜索的，不同地图坐标系之间的转换在astar源文件中完成。
+// 本cpp中位置均是世界地图坐标系下的，即传给astar.cpp和接受该cpp的数据
 // 本源文件中涉及到坐标均是世界地图坐标系下
 void startFindPath(ros::NodeHandle& nh)
 {
@@ -243,15 +246,27 @@ void goalPoseCallback(const geometry_msgs::PoseStamped::ConstPtr& msgPtr, ros::N
     astar_Pub_Goalpoint.publish(node_vis);
 
     goalPoint <<pt.x, pt.y;
-    cout <<"worldmap frame---goal: "<<pt.x<<","<<pt.y<<endl;
-    if (goalPoint(0) < map_origin(0) && goalPoint(1) < map_origin(1))
-    {
-        ROS_WARN("please set the correct or valid goalPoint again!!!");
-    }
-    else
-    {
+    cout <<"worldmap frame---goal: "<<pt.x<<","<<pt.y<<endl;\
+
+    #ifndef Test_heuristic_functions_separately
+        if (goalPoint(0) < map_origin(0) && goalPoint(1) < map_origin(1))
+        {
+            ROS_WARN("please set the correct or valid goalPoint again!!!");
+        }
+        else
+        {
+            startFindPath(nh);
+        }
+
+    #else
+        startPoint <<1, 4;
+        goalPoint <<5, 6;
         startFindPath(nh);
-    }
+
+    #endif
+
+
+
 }
 
 // 发布的轨迹用来可视化，需要从栅格地图坐标系转到世界地图坐标系上

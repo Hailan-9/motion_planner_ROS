@@ -57,7 +57,6 @@ void Astar::init()
 void Astar::reset()
 {
     cout <<"reset----"<<endl;
-    test_num = 0;
     expanded_nodes.clear();
     path_nodes.clear();
 
@@ -83,15 +82,30 @@ void Astar::reset()
 
 }
 
-// todolist这个地方有点问题 参数没有传入
 void Astar::setParam(ros::NodeHandle& nh)
 {
-    nh.param("astar_node/allocate_num", allocate_num, 10000);
-    nh.param("astar_node/resolution", resolution, 0.05);
+    // 获取参数有两种方式：
+    // ros::NodeHandle 提供了 param() 函数用于获取参数的值。
+    // 当你使用这个函数时，如果提供的参数名以斜杠 / 开头，
+    // 那么它会在参数服务器中寻找全局命名空间。如果不以斜杠开头，它将在当前节点的命名空间中查找。
+
+    // 由于我们的参数定义为 /astar_node/allocate_num，你可以使用全局命名空间获取它的值，
+    // 也可以使用相对于当前节点的命名空间。
+    // 使用全局命名空间获取："/astar_node/allocate_num"
+    // 使用相对命名空间获取："allocate_num"
+    // 无论你使用哪种方式，都可以获取到参数的值。
+
+    // nh.param("/astar_node/allocate_num", allocate_num, 10000);
+    nh.param("allocate_num", allocate_num, 10000);
+    nh.param("resolution", resolution, 0.05);
+    nh.param("heuristic_options", Heuristic_Options, 2);
+    nh.param("weight_g", weight_g, 1.0);
+    nh.param("weight_h", weight_h, 1.0);
 
     tie_breaker = 1.0 + 1.0 / 1000;
+
     // Heuristic_Options = EUCLIDEAN_DISTANCE;
-    Heuristic_Options = MANHATTAN_DISTANCE;
+    // Heuristic_Options = MANHATTAN_DISTANCE;
 
     
     node_visited_Pub = nh.advertise<visualization_msgs::Marker>("node_visited",1);
@@ -128,22 +142,24 @@ float Astar::getH(Point *curPoint,Point *endPoint)
     switch (Heuristic_Options)
     {
         case EUCLIDEAN_DISTANCE:
-            // 欧几里得、平方欧几里德方法
+            // 欧几里得
             costH = temp_vec.norm();
             // 平方欧几里德方法
-            // 计算机计算平方根比较耗时间
             return tie_breaker * costH;
 
         case MANHATTAN_DISTANCE:
             return tie_breaker * (fabs(temp_vec(0)) + fabs(temp_vec(1)));
 
+        case DIAGONAL_DISTANCE:
+            costH = fabs(temp_vec(0)) + fabs(temp_vec(1)) + (1.414 - 2) * std::min(fabs(temp_vec(0)),fabs(temp_vec(1)));
+            return tie_breaker * costH;
     }
 }
 
 //得到F
 float Astar::getF(Point *curPoint)
 {
-    return curPoint->G + curPoint->H;
+    return weight_g * curPoint->G + weight_h * curPoint->H;
 }
 
 void Astar::retrievePath(PointPtr end_node)
@@ -245,9 +261,9 @@ int Astar::searchPath(Point& startPoint, Point& endPoint, bool isIgnoreCorner)
 
     do{
 
-//         // 开放列表中未被访问过的节点的可视化。
-//         // 也就是在开放列表中，每次循环中，未被作为f值最小的节点弹出来的。弹出来的就是被扩展了expanded，进closeset中
-    
+        // // 开放列表中未被访问过的节点的可视化。
+        // // 也就是在开放列表中，每次循环中，未被作为f值最小的节点弹出来的。弹出来的就是被扩展了expanded，进closeset中
+            
         // // 绿色
         // node_visited_visual.header.frame_id = "map";
         // node_visited_visual.header.stamp = ros::Time::now();
@@ -284,15 +300,25 @@ int Astar::searchPath(Point& startPoint, Point& endPoint, bool isIgnoreCorner)
 
 
         /* -----------------Determine if the destination has been reached--------------------- */
-        bool reach_goal = abs(curPoint->x - endPoint.x) <=1 && abs(curPoint->y - endPoint.y) <=1;
+        bool reach_goal = abs(curPoint->x - endPoint.x) <=0 && abs(curPoint->y - endPoint.y) <=0;
         if(reach_goal)
         {
-            retrievePath(curPoint);
-            cout <<"path search success!!!!!!"<<endl;
+            
+            cout <<"path search success!!!!!!!!!"<<endl;
             cout << "use node num: " << use_node_num << endl;
             cout << "iter num: " << iter_num << endl;
             cout <<"node_closed_num: "<<node_closed_visual.points.size()<<endl;
-            cout <<"test_num: "<<test_num<<endl;
+            
+            outfile <<"*****************************************************"<<endl;
+            outfile <<"path search success!!!!!!!!!"<<endl;
+            outfile <<"weight_g: "<<weight_g <<" weight_h: "<<weight_h<<endl;
+            outfile <<"Heuristic_Options: "<<Heuristic_Options<<endl;
+            outfile <<"total cost(G): "<<curPoint->G<<endl;
+            outfile << "use node num: " << use_node_num << endl;
+            outfile << "iter num: " << iter_num << endl;
+            outfile <<"node_closed_num: "<<node_closed_visual.points.size()<<endl;
+
+            retrievePath(curPoint);
 
             return REACH_END;
         }
@@ -348,7 +374,16 @@ int Astar::searchPath(Point& startPoint, Point& endPoint, bool isIgnoreCorner)
                             cout <<"use_node_num: "<<use_node_num<<endl;
                             cout <<"iterm_num: "<<iter_num<<endl;
                             cout <<"node_closed_num: "<<node_closed_visual.points.size()<<endl;
-                            cout <<"test_num: "<<test_num<<endl;
+                            
+                            outfile <<"*****************************************************"<<endl;
+                            outfile <<"***run out of node_pool memory***" <<endl;
+                            outfile <<"weight_g: "<<weight_g <<" weight_h: "<<weight_h<<endl;
+                            outfile <<"Heuristic_Options: "<<Heuristic_Options<<endl;
+                            outfile <<"total cost(G): "<<curPoint->G<<endl;
+                            outfile <<"use_node_num: "<<use_node_num<<endl;
+                            outfile <<"iterm_num: "<<iter_num<<endl;
+                            outfile <<"node_closed_num: "<<node_closed_visual.points.size()<<endl;
+
                             return NO_PATH;
                         }
                     }
@@ -356,7 +391,6 @@ int Astar::searchPath(Point& startPoint, Point& endPoint, bool isIgnoreCorner)
                     {
                         if (getG(curPoint, neighbor_node) < neighbor_node->G)
                         {   
-                            test_num++;
                             neighbor_node->parent == curPoint;
                             neighbor_node->G = getG(curPoint,neighbor_node);
                             neighbor_node->F = getF(neighbor_node);
@@ -377,6 +411,17 @@ int Astar::searchPath(Point& startPoint, Point& endPoint, bool isIgnoreCorner)
     cout << "open set empty, no path!" << endl;
     cout << "use node num: " << use_node_num << endl;
     cout << "iter num: " << iter_num << endl;
+    cout <<"node_closed_num: "<<node_closed_visual.points.size()<<endl;
+   
+    outfile <<"*****************************************************"<<endl;
+    outfile << "open set empty, no path!" << endl;
+    outfile <<"weight_g: "<<weight_g <<" weight_h: "<<weight_h<<endl;
+    outfile <<"Heuristic_Options: "<<Heuristic_Options<<endl;
+    outfile <<"total cost(G): "<<curPoint->G<<endl;
+    outfile << "use node num: " << use_node_num << endl;
+    outfile << "iter num: " << iter_num << endl;
+    outfile <<"node_closed_num: "<<node_closed_visual.points.size()<<endl;
+
     return NO_PATH;
 }
 
@@ -390,9 +435,8 @@ vector<Eigen::Vector2f> Astar::GetPath()
     for (int i(0); i < path_nodes.size(); i++)
     {
         path.push_back(path_nodes[i]->w_pos + offset_pos);
-        outfile <<"(" << path_nodes[i]->w_pos(0)<<","<<path_nodes[i]->w_pos(1)<<")"<<endl;
+        // outfile <<"(" << path_nodes[i]->w_pos(0)<<","<<path_nodes[i]->w_pos(1)<<")"<<endl;
     }
-    outfile <<"*****************************************************"<<endl;
     return path;
 }
 
@@ -401,15 +445,8 @@ vector<Eigen::Vector2f> Astar::GetPath()
 bool Astar::isCanreach(const Point* curPoint, const Eigen::Vector2f& targetPoint,bool isIgnoreCorner) const
 {
 
-
-    if (map1[targetPoint(0)][targetPoint(1)] == 100)
-    {
-        ROS_WARN("warnning------- obstacle-----");
-    }
-    // if(targetPoint(0) <0 || targetPoint(0) > map1.size() - 1 ||
-    //    targetPoint(1) <0 || targetPoint(1) > map1[0].size() -1 ||
-    if(targetPoint(0) <0 || targetPoint(0) > map1[0].size() - 1 ||
-    targetPoint(1) <0 || targetPoint(1) > map1.size() -1 ||
+    if(targetPoint(0) <0 || targetPoint(0) > map1.size() - 1 ||
+       targetPoint(1) <0 || targetPoint(1) > map1[0].size() -1 ||
         (curPoint->x == targetPoint(0) && curPoint->y == targetPoint(1))
        || map1[targetPoint(0)][targetPoint(1)] == 100
        )

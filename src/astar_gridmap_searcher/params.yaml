@@ -1,0 +1,5 @@
+# params.yaml
+allocate_num: 200000
+heuristic_options: 2
+weight_g: 1.0
+weight_h: 1.0

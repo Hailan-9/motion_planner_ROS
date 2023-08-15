@@ -227,7 +227,7 @@ class Astar
 
 
         /* ------------------main data structure------------------ */
-        int use_node_num;// 路径搜索中实际探索的节点数
+        int use_node_num;// 路径搜索中实际探索的节点数---不能超过节点资源池的容量
         int iter_num;// 迭代搜索的次数 也就是最外层循环次数
         // 将被探索过的节点均存入其中，目的是方便查找
         NodeHashTable expanded_nodes;
