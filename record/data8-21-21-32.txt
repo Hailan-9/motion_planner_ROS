@@ -1,0 +1,24 @@
+*****************************************************
+open set empty, no path!
+weight_g: 1 weight_h: 1
+Heuristic_Options: 2
+total cost(G): 0
+use node num: 1
+iter num: 1
+node_closed_num: 1
+*****************************************************
+path search success!!!!!!!!!
+weight_g: 1 weight_h: 1
+Heuristic_Options: 2
+total cost(G): 779
+use node num: 3
+iter num: 2
+node_closed_num: 3
+*****************************************************
+open set empty, no path!
+weight_g: 1 weight_h: 1
+Heuristic_Options: 2
+total cost(G): 3528
+use node num: 2
+iter num: 2
+node_closed_num: 2

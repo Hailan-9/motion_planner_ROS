@@ -5,7 +5,7 @@
 extern std::ofstream outfile;
 extern std::ofstream outfile1;
 
-using namespace A_Star;
+using namespace Grid_Path_Search;
 
 Astar::~Astar()
 {
@@ -44,8 +44,8 @@ void Astar::init()
 
     node_closed_visual.color.a = 1.0;
     node_closed_visual.color.r = 0.0;
-    node_closed_visual.color.g = 0.0;
-    node_closed_visual.color.b = 1.0;
+    node_closed_visual.color.g = 1.0;
+    node_closed_visual.color.b = 0.0;
 
     node_closed_visual.scale.x = resolution * 1;
     node_closed_visual.scale.y = resolution * 1;
@@ -308,7 +308,7 @@ int Astar::searchPath(Point& startPoint, Point& endPoint, bool isIgnoreCorner)
             cout << "use node num: " << use_node_num << endl;
             cout << "iter num: " << iter_num << endl;
             cout <<"node_closed_num: "<<node_closed_visual.points.size()<<endl;
-            
+
             outfile <<"*****************************************************"<<endl;
             outfile <<"path search success!!!!!!!!!"<<endl;
             outfile <<"weight_g: "<<weight_g <<" weight_h: "<<weight_h<<endl;

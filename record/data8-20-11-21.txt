@@ -1,0 +1,8 @@
+*****************************************************
+path search success!!!!!!!!!
+weight_g: 1 weight_h: 1
+Heuristic_Options: 2
+total cost(G): 214
+use node num: 7561
+iter num: 7253
+node_closed_num: 7254

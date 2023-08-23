@@ -1,46 +1,41 @@
 {
-    "python.autoComplete.extraPaths": [
-        "/home/zs/wpr_ws/devel/lib/python3/dist-packages",
-        "/home/zs/uuuu/demo2_ws/devel/lib/python3/dist-packages",
-        "/opt/ros/noetic/lib/python3/dist-packages"
-    ],
-    "python.analysis.extraPaths": [
-        "/home/zs/wpr_ws/devel/lib/python3/dist-packages",
-        "/home/zs/uuuu/demo2_ws/devel/lib/python3/dist-packages",
-        "/opt/ros/noetic/lib/python3/dist-packages"
-    ],
     "files.associations": {
-        "iostream": "cpp",
+        "*.tcc": "cpp",
+        "deque": "cpp",
+        "list": "cpp",
+        "string": "cpp",
+        "vector": "cpp",
+        "core": "cpp",
+        "algorithm": "cpp",
+        "array": "cpp",
+        "atomic": "cpp",
+        "bit": "cpp",
+        "bitset": "cpp",
+        "cassert": "cpp",
+        "ccomplex": "cpp",
         "cctype": "cpp",
+        "cerrno": "cpp",
+        "cfloat": "cpp",
+        "chrono": "cpp",
+        "ciso646": "cpp",
+        "climits": "cpp",
         "clocale": "cpp",
         "cmath": "cpp",
+        "complex": "cpp",
+        "condition_variable": "cpp",
         "cstdarg": "cpp",
         "cstddef": "cpp",
+        "cstdint": "cpp",
         "cstdio": "cpp",
         "cstdlib": "cpp",
         "cstring": "cpp",
         "ctime": "cpp",
         "cwchar": "cpp",
         "cwctype": "cpp",
-        "array": "cpp",
-        "atomic": "cpp",
-        "strstream": "cpp",
-        "bit": "cpp",
-        "*.tcc": "cpp",
-        "bitset": "cpp",
-        "chrono": "cpp",
-        "complex": "cpp",
-        "condition_variable": "cpp",
-        "cstdint": "cpp",
-        "deque": "cpp",
-        "list": "cpp",
         "map": "cpp",
         "set": "cpp",
         "unordered_map": "cpp",
-        "unordered_set": "cpp",
-        "vector": "cpp",
         "exception": "cpp",
-        "algorithm": "cpp",
         "functional": "cpp",
         "iterator": "cpp",
         "memory": "cpp",
@@ -49,33 +44,128 @@
         "optional": "cpp",
         "random": "cpp",
         "ratio": "cpp",
-        "string": "cpp",
         "string_view": "cpp",
         "system_error": "cpp",
         "tuple": "cpp",
         "type_traits": "cpp",
         "utility": "cpp",
-        "hash_map": "cpp",
-        "hash_set": "cpp",
         "fstream": "cpp",
         "initializer_list": "cpp",
         "iomanip": "cpp",
+        "ios": "cpp",
         "iosfwd": "cpp",
+        "iostream": "cpp",
         "istream": "cpp",
         "limits": "cpp",
+        "locale": "cpp",
         "mutex": "cpp",
         "new": "cpp",
         "ostream": "cpp",
-        "shared_mutex": "cpp",
+        "queue": "cpp",
         "sstream": "cpp",
+        "stack": "cpp",
         "stdexcept": "cpp",
         "streambuf": "cpp",
         "thread": "cpp",
         "cfenv": "cpp",
         "cinttypes": "cpp",
+        "cstdbool": "cpp",
         "typeindex": "cpp",
         "typeinfo": "cpp",
         "variant": "cpp"
     },
-    "ros.distro": "noetic"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    {
+    //注释 配置doxygen 使其可以自动生成注释模板---zhangshuai
+
+    "doxdocgen.c.triggerSequence": "/**",   // 触发自动注释的生成
+    "doxdocgen.c.commentPrefix": " * ",     // 注释行的前缀
+    "doxdocgen.c.firstLine": "/**",         // 注释行的首行
+    "doxdocgen.c.lastLine": " */",          // 注释行的尾行
+
+    // file注释顺序
+    "doxdocgen.file.fileOrder": [
+        "copyright",
+        "empty",
+        "file",
+        "brief",
+        "author",
+        "version",
+        "date",
+        // "custom"    // 自定义选项
+    ],
+    // file自定义选项
+    "doxdocgen.file.customTag": [
+        "自定义选项",
+    ],
+
+    "doxdocgen.file.copyrightTag": [                                // file注释
+        "@copyright Copyright (c) {year}-hailan"
+    ],
+    "doxdocgen.generic.authorEmail":    "https://github.com/Hailan-9",         // {email}  样式
+    "doxdocgen.generic.authorName":     "hailan",                // {author} 样式
+    "doxdocgen.generic.dateFormat":     "YYYY-MM-DD",               // {date}   样式
+
+    "doxdocgen.generic.dateTemplate":   "@date{indent:9}{date}",    // {date}   模板
+    "doxdocgen.file.fileTemplate":      "@file{indent:9}{name}",    // {name}   模板
+    "doxdocgen.generic.briefTemplate":  "@brief{indent:9}描述",
+    "doxdocgen.file.versionTag":        "@version{indent:9}0.1",
+    "doxdocgen.generic.authorTag":      "@author{indent:9}{author}({email})",
+
+    // generic注释的内容和顺序
+    "doxdocgen.generic.order": [
+        "brief",
+        "empty",
+        "param",
+        "return",
+        // "empty",
+        "author",
+        "date",
+        // "custom",       // 自定义选项
+    ],
+
+
+
+
+    
+    // generic自定义选项
+    "doxdocgen.generic.customTags": [
+        "自定义选项",
+    ],
+    "doxdocgen.cpp.tparamTemplate": "@tparam {param} ", // ???
+    "doxdocgen.generic.paramTemplate": "@param{indent:9}{param}{indent:21}参数描述",
+    "doxdocgen.generic.returnTemplate": "@return{indent:9}{type} ",
+
+    "doxdocgen.generic.includeTypeAtReturn": true,      // return 中包含类型信息
+    "doxdocgen.generic.boolReturnsTrueFalse": false,    // bool 返回值拆分成 true 和 false 两种情况
+    "doxdocgen.generic.linesToGet": 4,                  // 回车后最多向下多少行去找函数声明
+    "doxdocgen.generic.useGitUserName": false,          // {author} 是都根据 git config --get user.name 替换
+    "doxdocgen.generic.useGitUserEmail": false,
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
 }

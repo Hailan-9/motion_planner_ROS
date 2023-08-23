@@ -1,0 +1,112 @@
+*****************************************************
+open set empty, no path!
+weight_g: 1 weight_h: 1
+Heuristic_Options: 2
+total cost(G): 0
+use node num: 1
+iter num: 1
+node_closed_num: 1
+*****************************************************
+open set empty, no path!
+weight_g: 1 weight_h: 1
+Heuristic_Options: 2
+total cost(G): 0
+use node num: 1
+iter num: 1
+node_closed_num: 1
+*****************************************************
+path search success!!!!!!!!!
+weight_g: 1 weight_h: 1
+Heuristic_Options: 2
+total cost(G): 24838
+use node num: 3
+iter num: 2
+node_closed_num: 3
+*****************************************************
+open set empty, no path!
+weight_g: 1 weight_h: 1
+Heuristic_Options: 2
+total cost(G): 0
+use node num: 1
+iter num: 1
+node_closed_num: 1
+*****************************************************
+path search success!!!!!!!!!
+weight_g: 1 weight_h: 1
+Heuristic_Options: 2
+total cost(G): 8161
+use node num: 3
+iter num: 2
+node_closed_num: 3
+*****************************************************
+open set empty, no path!
+weight_g: 1 weight_h: 1
+Heuristic_Options: 2
+total cost(G): 0
+use node num: 1
+iter num: 1
+node_closed_num: 1
+*****************************************************
+path search success!!!!!!!!!
+weight_g: 1 weight_h: 1
+Heuristic_Options: 2
+total cost(G): 100
+use node num: 2
+iter num: 1
+node_closed_num: 2
+*****************************************************
+path search success!!!!!!!!!
+weight_g: 1 weight_h: 1
+Heuristic_Options: 2
+total cost(G): 361
+use node num: 2
+iter num: 1
+node_closed_num: 2
+*****************************************************
+path search success!!!!!!!!!
+weight_g: 1 weight_h: 1
+Heuristic_Options: 2
+total cost(G): 8
+use node num: 4
+iter num: 3
+node_closed_num: 4
+*****************************************************
+path search success!!!!!!!!!
+weight_g: 1 weight_h: 1
+Heuristic_Options: 2
+total cost(G): 947
+use node num: 5
+iter num: 4
+node_closed_num: 5
+*****************************************************
+path search success!!!!!!!!!
+weight_g: 1 weight_h: 1
+Heuristic_Options: 2
+total cost(G): 4874
+use node num: 5
+iter num: 4
+node_closed_num: 5
+*****************************************************
+path search success!!!!!!!!!
+weight_g: 1 weight_h: 1
+Heuristic_Options: 2
+total cost(G): 3157
+use node num: 5
+iter num: 4
+node_closed_num: 5
+*****************************************************
+path search success!!!!!!!!!
+weight_g: 1 weight_h: 1
+Heuristic_Options: 2
+total cost(G): 256
+use node num: 2
+iter num: 1
+node_closed_num: 2
+*****************************************************
+open set empty, no path!
+weight_g: 1 weight_h: 1
+Heuristic_Options: 2
+total cost(G): 0
+use node num: 1
+iter num: 1
+node_closed_num: 1

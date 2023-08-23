@@ -767,6 +767,12 @@ gtest_hide_internal_symbols:BOOL=OFF
 //Dependencies for the target
 gtest_main_LIB_DEPENDS:STATIC=general;gtest;
 
+//Value Computed by CMake
+jps_gridmap_searcher_BINARY_DIR:STATIC=/home/zs/motion_planner/build/jps_gridmap_searcher
+
+//Value Computed by CMake
+jps_gridmap_searcher_SOURCE_DIR:STATIC=/home/zs/motion_planner/src/jps_gridmap_searcher
+
 //Path to a library.
 lib:FILEPATH=/usr/lib/liborocos-kdl.so
 

@@ -1,0 +1,48 @@
+*****************************************************
+open set empty, no path!
+weight_g: 1 weight_h: 1
+Heuristic_Options: 2
+total cost(G): 0
+use node num: 1
+iter num: 1
+node_closed_num: 1
+*****************************************************
+path search success!!!!!!!!!
+weight_g: 1 weight_h: 1
+Heuristic_Options: 2
+total cost(G): 11
+use node num: 4
+iter num: 3
+node_closed_num: 4
+*****************************************************
+path search success!!!!!!!!!
+weight_g: 1 weight_h: 1
+Heuristic_Options: 2
+total cost(G): 24
+use node num: 4
+iter num: 3
+node_closed_num: 4
+*****************************************************
+open set empty, no path!
+weight_g: 1 weight_h: 1
+Heuristic_Options: 2
+total cost(G): 0
+use node num: 1
+iter num: 1
+node_closed_num: 1
+*****************************************************
+open set empty, no path!
+weight_g: 1 weight_h: 1
+Heuristic_Options: 2
+total cost(G): 0
+use node num: 1
+iter num: 1
+node_closed_num: 1
+*****************************************************
+open set empty, no path!
+weight_g: 1 weight_h: 1
+Heuristic_Options: 2
+total cost(G): 0
+use node num: 1
+iter num: 1
+node_closed_num: 1

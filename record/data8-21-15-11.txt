@@ -1,0 +1,24 @@
+*****************************************************
+path search success!!!!!!!!!
+weight_g: 1 weight_h: 1
+Heuristic_Options: 2
+total cost(G): 15
+use node num: 45
+iter num: 9
+node_closed_num: 10
+*****************************************************
+path search success!!!!!!!!!
+weight_g: 1 weight_h: 1
+Heuristic_Options: 2
+total cost(G): 16
+use node num: 48
+iter num: 10
+node_closed_num: 11
+*****************************************************
+path search success!!!!!!!!!
+weight_g: 1 weight_h: 1
+Heuristic_Options: 2
+total cost(G): 35
+use node num: 102
+iter num: 26
+node_closed_num: 27

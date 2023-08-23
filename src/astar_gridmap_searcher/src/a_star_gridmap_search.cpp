@@ -10,6 +10,7 @@
 #include "astar_gridmap_searcher/a_star_gridmap_search.hpp"
 #include "astar_gridmap_searcher/astar.hpp"
 #include "astar_gridmap_searcher/algorithm_timer.h"
+#include "astar_gridmap_searcher/jps.hpp"
 
 #include <time.h>
 #include <stdio.h>
@@ -18,16 +19,18 @@
 
 
 using namespace std;
-using namespace A_Star;
+using namespace Grid_Path_Search;
 std::ofstream outfile;
 std::ofstream outfile1;
 
 bool init_finish = false;
-#define Test_heuristic_functions_separately
+// #define Test_heuristic_functions_separately
 
 // 定义全局变量
-Astar astar;
-
+// Astar astar;
+// JPS算法是A*算法的改进版本
+JPS jps;
+string search_choice;
 
 int main(int argc, char *argv[])
 {
@@ -50,7 +53,13 @@ int main(int argc, char *argv[])
     ros::init(argc, argv, "astar_node");
     // 话题和参数私有，参考其命名空间与节点名称！
     ros::NodeHandle nh("~");
-
+    // 在 C++ 中，虽然字符串字面量的类型是 const char[]，但由于 C++ 标准库中提供了 std::string 类型，C++ 
+    // 允许在一些上下文中将字符串字面量隐式转换为 std::string 类型。这是通过调用 std::string 的构造函数来实现的。
+    // 比如const char* cstr = "hello"; // 字符串字面量
+    // std::string str = cstr;     // 隐式转换为 std::string
+    // 在 C++ 中，字符串字面量的类型是 const char[]。这意味着字符串字面量被解释为一个以空字符 '\0' 结尾的字符数组。这也被称为 C 风格字符串。
+    // string("astar") 这个表达式的目的是使用 std::string 构造函数将 "astar" 字符串字面量转换为一个 std::string 对象
+    nh.param("search_choice",search_choice,string("astar"));
     ROS_INFO("init----1");
 
 
@@ -102,22 +111,36 @@ void startFindPath(ros::NodeHandle& nh)
     // 时间
     Algorithm_Timer algorithm_Timer;
     algorithm_Timer.begin();
-    astar.setParam(nh);
+    jps.setParam(nh);
 
     if (!init_finish)
     {
-        astar.InitAstar(mapData,map_origin);
-        astar.init();
+        jps.InitAstar(mapData,map_origin);
+        jps.init();
         init_finish = true;
     }
 
-    astar.reset();
+    jps.reset();
+    int search_success;
+    nh.param("search_choice",search_choice,string("astar"));
+    if(search_choice == string("astar"))
+    {
+        cout<<search_choice<<endl;
+        search_success = jps.searchPath(astar_Start, astar_Goal,1);
+    }
+    else if(search_choice == string("jps"))
+    {
+        cout<<search_choice<<endl;
+        search_success = jps.jpsSearchPath(astar_Start, astar_Goal,1);
+    }
+    else
+    {
 
-    int search_success = astar.searchPath(astar_Start, astar_Goal,1);
+    }
 
     if(search_success == REACH_END)
     {
-        pathPoint = astar.GetPath();
+        pathPoint = jps.GetPath();
 
         std::string astar_task = "Astar_search";
         algorithm_Timer.end(astar_task);
@@ -257,7 +280,7 @@ void goalPoseCallback(const geometry_msgs::PoseStamped::ConstPtr& msgPtr, ros::N
         {
             startFindPath(nh);
         }
-
+        cout<<endl<<endl<<endl<<endl<<endl<<endl<<endl<<endl;
     #else
         startPoint <<1, 4;
         goalPoint <<5, 6;

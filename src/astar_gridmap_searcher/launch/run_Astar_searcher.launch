@@ -1,7 +1,7 @@
 <launch>
     <!-- 动态参数 -->
-    <!-- roslaunch astar_gridmap_searcher run_Astar_searcher.launch allocate_num:=256 -->
-    <!-- <arg name=""> -->
+    <!-- 使用方式：roslaunch astar_gridmap_searcher run_Astar_searcher.launch allocate_num:=256 -->
+    <arg name="search_choice" />
 
 
     <!-- 程序一运行就报段错误，加入gdb调试，进行debug -->
@@ -21,7 +21,7 @@
         <!-- 最方便的设置参数的方法就是加载yaml -->
         <rosparam command="load" file="$(find astar_gridmap_searcher)/params.yaml" />
         <!-- 下面这种用法是用到了arg动态传参，和加载yaml文件无关 -->
-        <!-- <param name="allocate_num" value="$(arg allocate_num)" /> -->
+        <param name="search_choice" value="$(arg search_choice)" />
         <!-- <param name="heuristic_options" value="$(arg heuristic_options)" /> -->
     </node>
 

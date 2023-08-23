@@ -1,0 +1,144 @@
+*****************************************************
+path search success!!!!!!!!!
+weight_g: 1 weight_h: 1
+Heuristic_Options: 2
+total cost(G): 576
+use node num: 10
+iter num: 6
+node_closed_num: 7
+*****************************************************
+path search success!!!!!!!!!
+weight_g: 1 weight_h: 1
+Heuristic_Options: 2
+total cost(G): 895
+use node num: 10
+iter num: 6
+node_closed_num: 7
+*****************************************************
+path search success!!!!!!!!!
+weight_g: 1 weight_h: 1
+Heuristic_Options: 2
+total cost(G): 4122
+use node num: 13
+iter num: 10
+node_closed_num: 11
+*****************************************************
+path search success!!!!!!!!!
+weight_g: 1 weight_h: 1
+Heuristic_Options: 2
+total cost(G): 818
+use node num: 10
+iter num: 6
+node_closed_num: 7
+*****************************************************
+path search success!!!!!!!!!
+weight_g: 1 weight_h: 1
+Heuristic_Options: 2
+total cost(G): 47600
+use node num: 21
+iter num: 20
+node_closed_num: 21
+*****************************************************
+path search success!!!!!!!!!
+weight_g: 1 weight_h: 1
+Heuristic_Options: 2
+total cost(G): 47000
+use node num: 21
+iter num: 20
+node_closed_num: 21
+*****************************************************
+path search success!!!!!!!!!
+weight_g: 1 weight_h: 1
+Heuristic_Options: 2
+total cost(G): 219
+use node num: 4
+iter num: 2
+node_closed_num: 3
+*****************************************************
+path search success!!!!!!!!!
+weight_g: 1 weight_h: 1
+Heuristic_Options: 2
+total cost(G): 52079
+use node num: 21
+iter num: 20
+node_closed_num: 21
+*****************************************************
+path search success!!!!!!!!!
+weight_g: 1 weight_h: 1
+Heuristic_Options: 2
+total cost(G): 52058
+use node num: 21
+iter num: 20
+node_closed_num: 21
+*****************************************************
+path search success!!!!!!!!!
+weight_g: 1 weight_h: 1
+Heuristic_Options: 2
+total cost(G): 42506
+use node num: 16
+iter num: 12
+node_closed_num: 13
+*****************************************************
+path search success!!!!!!!!!
+weight_g: 1 weight_h: 1
+Heuristic_Options: 2
+total cost(G): 42163
+use node num: 16
+iter num: 12
+node_closed_num: 13
+*****************************************************
+path search success!!!!!!!!!
+weight_g: 1 weight_h: 1
+Heuristic_Options: 2
+total cost(G): 38499
+use node num: 10
+iter num: 7
+node_closed_num: 8
+*****************************************************
+path search success!!!!!!!!!
+weight_g: 1 weight_h: 1
+Heuristic_Options: 2
+total cost(G): 42438
+use node num: 16
+iter num: 12
+node_closed_num: 13
+*****************************************************
+path search success!!!!!!!!!
+weight_g: 1 weight_h: 1
+Heuristic_Options: 2
+total cost(G): 42686
+use node num: 16
+iter num: 12
+node_closed_num: 13
+*****************************************************
+path search success!!!!!!!!!
+weight_g: 1 weight_h: 1
+Heuristic_Options: 2
+total cost(G): 40787
+use node num: 16
+iter num: 12
+node_closed_num: 13
+*****************************************************
+path search success!!!!!!!!!
+weight_g: 1 weight_h: 1
+Heuristic_Options: 2
+total cost(G): 40814
+use node num: 16
+iter num: 12
+node_closed_num: 13
+*****************************************************
+path search success!!!!!!!!!
+weight_g: 1 weight_h: 1
+Heuristic_Options: 2
+total cost(G): 47100
+use node num: 18
+iter num: 16
+node_closed_num: 17
+*****************************************************
+path search success!!!!!!!!!
+weight_g: 1 weight_h: 1
+Heuristic_Options: 2
+total cost(G): 40684
+use node num: 14
+iter num: 10
+node_closed_num: 11

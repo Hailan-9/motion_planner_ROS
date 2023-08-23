@@ -4,6 +4,7 @@
 /* A_star算法 hpp*/
 
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <list>
 #include <queue>
@@ -19,7 +20,10 @@
 #include <boost/functional/hash.hpp>
 
 using namespace std;
-namespace A_Star
+extern std::ofstream outfile;
+extern std::ofstream outfile1;
+
+namespace Grid_Path_Search
 {
 
 
@@ -60,6 +64,10 @@ struct Point
     float x;
     float y;
     float F, G, H;
+    // JPS算法使用 direction of expanding
+    // dx dy direction 即当前节点的父节点指向当前节点的方向！！
+    Eigen::Vector2f expand_dir;
+
     Eigen::Vector2f pos;
     char point_State{};
     Point *parent;
@@ -68,7 +76,17 @@ struct Point
     parent(NULL)
     {
         pos <<x, y;
+        expand_dir = Eigen::Vector2f::Zero();
     }
+    // JPS专用
+    Point(float _x, float _y, float dx, float dy) : x(_x), y(_y), \
+    F(0), G(0), H(0), point_State(NOT_EXPAND),\
+    parent(NULL)
+    {
+        expand_dir <<dx, dy;
+        pos <<x, y;
+    }
+
     void set_pos()
     {
         pos <<x, y;
@@ -84,6 +102,8 @@ struct Point
     {
         parent = NULL;
         point_State = NOT_EXPAND;
+        expand_dir = Eigen::Vector2f::Zero();
+
     }
     ~Point() {};
 
@@ -114,6 +134,11 @@ struct NodeComparator
     {
         // 第二个对象的元素 小于 第一个对象的元素时，才真，说明较小的值具有较高的优先级
         return node1->F > node2->F;
+
+        // 补充完善！借鉴自：https://github.com/KumarRobotics/jps3d/tree/master
+        // if( ( node1->F >= node2->F- 0.000001) && (node1->F <= node2->F +0.000001) )
+        //     return node1->G > node2->G // if equal compare gvals
+      
     }
 };
 
@@ -205,7 +230,7 @@ class Astar
         //isIgnoreCorner 是否可以绊住情况下对角线通过
 
 
-    private:
+    protected:
 
         //得到G
         float getG(Point *parentPoint, Point *curPoint);
@@ -229,7 +254,7 @@ class Astar
         /* ------------------main data structure------------------ */
         int use_node_num;// 路径搜索中实际探索的节点数---不能超过节点资源池的容量
         int iter_num;// 迭代搜索的次数 也就是最外层循环次数
-        // 将被探索过的节点均存入其中，目的是方便查找
+        // 将被探索过的节点均存入其中，即加入到openlist的所有节点，目的是方便查找
         NodeHashTable expanded_nodes;
         //地图 使用二维数组来表示 100表示障碍物-黑色 -1表示未知情况-灰色 0表示无障碍物可通行-白色
         vector<vector<int>> map1;

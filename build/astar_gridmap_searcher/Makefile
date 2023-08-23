@@ -236,6 +236,33 @@ src/astar.cpp.s:
 	cd /home/zs/motion_planner/build && $(MAKE) -f astar_gridmap_searcher/CMakeFiles/astar_gridmap_searcher.dir/build.make astar_gridmap_searcher/CMakeFiles/astar_gridmap_searcher.dir/src/astar.cpp.s
 .PHONY : src/astar.cpp.s
 
+src/jps.o: src/jps.cpp.o
+
+.PHONY : src/jps.o
+
+# target to build an object file
+src/jps.cpp.o:
+	cd /home/zs/motion_planner/build && $(MAKE) -f astar_gridmap_searcher/CMakeFiles/astar_gridmap_searcher.dir/build.make astar_gridmap_searcher/CMakeFiles/astar_gridmap_searcher.dir/src/jps.cpp.o
+.PHONY : src/jps.cpp.o
+
+src/jps.i: src/jps.cpp.i
+
+.PHONY : src/jps.i
+
+# target to preprocess a source file
+src/jps.cpp.i:
+	cd /home/zs/motion_planner/build && $(MAKE) -f astar_gridmap_searcher/CMakeFiles/astar_gridmap_searcher.dir/build.make astar_gridmap_searcher/CMakeFiles/astar_gridmap_searcher.dir/src/jps.cpp.i
+.PHONY : src/jps.cpp.i
+
+src/jps.s: src/jps.cpp.s
+
+.PHONY : src/jps.s
+
+# target to generate assembly for a file
+src/jps.cpp.s:
+	cd /home/zs/motion_planner/build && $(MAKE) -f astar_gridmap_searcher/CMakeFiles/astar_gridmap_searcher.dir/build.make astar_gridmap_searcher/CMakeFiles/astar_gridmap_searcher.dir/src/jps.cpp.s
+.PHONY : src/jps.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -256,6 +283,9 @@ help:
 	@echo "... src/astar.o"
 	@echo "... src/astar.i"
 	@echo "... src/astar.s"
+	@echo "... src/jps.o"
+	@echo "... src/jps.i"
+	@echo "... src/jps.s"
 .PHONY : help
 
 

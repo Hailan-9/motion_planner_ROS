@@ -1,0 +1,40 @@
+*****************************************************
+path search success!!!!!!!!!
+weight_g: 1 weight_h: 1
+Heuristic_Options: 2
+total cost(G): 111
+use node num: 2242
+iter num: 2005
+node_closed_num: 2006
+*****************************************************
+path search success!!!!!!!!!
+weight_g: 1 weight_h: 1
+Heuristic_Options: 2
+total cost(G): 94
+use node num: 1473
+iter num: 1271
+node_closed_num: 1272
+*****************************************************
+path search success!!!!!!!!!
+weight_g: 1 weight_h: 1
+Heuristic_Options: 2
+total cost(G): 93
+use node num: 1465
+iter num: 1267
+node_closed_num: 1268
+*****************************************************
+path search success!!!!!!!!!
+weight_g: 1 weight_h: 1
+Heuristic_Options: 2
+total cost(G): 57
+use node num: 152
+iter num: 32
+node_closed_num: 33
+*****************************************************
+path search success!!!!!!!!!
+weight_g: 1 weight_h: 1
+Heuristic_Options: 2
+total cost(G): 61
+use node num: 997
+iter num: 825
+node_closed_num: 826

@@ -1,0 +1,64 @@
+*****************************************************
+open set empty, no path!
+weight_g: 1 weight_h: 1
+Heuristic_Options: 2
+total cost(G): 72
+use node num: 97
+iter num: 97
+node_closed_num: 97
+*****************************************************
+open set empty, no path!
+weight_g: 1 weight_h: 1
+Heuristic_Options: 2
+total cost(G): 72
+use node num: 97
+iter num: 97
+node_closed_num: 97
+*****************************************************
+open set empty, no path!
+weight_g: 1 weight_h: 1
+Heuristic_Options: 2
+total cost(G): 72
+use node num: 97
+iter num: 97
+node_closed_num: 97
+*****************************************************
+open set empty, no path!
+weight_g: 1 weight_h: 1
+Heuristic_Options: 2
+total cost(G): 72
+use node num: 97
+iter num: 97
+node_closed_num: 97
+*****************************************************
+open set empty, no path!
+weight_g: 1 weight_h: 1
+Heuristic_Options: 2
+total cost(G): 72
+use node num: 97
+iter num: 97
+node_closed_num: 97
+*****************************************************
+open set empty, no path!
+weight_g: 1 weight_h: 1
+Heuristic_Options: 2
+total cost(G): 72
+use node num: 97
+iter num: 97
+node_closed_num: 97
+*****************************************************
+open set empty, no path!
+weight_g: 1 weight_h: 1
+Heuristic_Options: 2
+total cost(G): 72
+use node num: 97
+iter num: 97
+node_closed_num: 97
+*****************************************************
+open set empty, no path!
+weight_g: 1 weight_h: 1
+Heuristic_Options: 2
+total cost(G): 72
+use node num: 97
+iter num: 97
+node_closed_num: 97
