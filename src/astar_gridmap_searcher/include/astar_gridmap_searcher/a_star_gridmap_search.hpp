@@ -7,6 +7,8 @@
  * @version 0.1
  * @date    2023-08-05
  */
+#pragma once
+
 #include <ros/ros.h>
 #include <Eigen/Dense>
 #include <Eigen/Geometry>

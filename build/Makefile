@@ -986,6 +986,19 @@ astar_gridmap_searcher/fast:
 	$(MAKE) -f astar_gridmap_searcher/CMakeFiles/astar_gridmap_searcher.dir/build.make astar_gridmap_searcher/CMakeFiles/astar_gridmap_searcher.dir/build
 .PHONY : astar_gridmap_searcher/fast
 
+#=============================================================================
+# Target rules for targets named sample_path_finding
+
+# Build rule for target.
+sample_path_finding: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 sample_path_finding
+.PHONY : sample_path_finding
+
+# fast build rule for target.
+sample_path_finding/fast:
+	$(MAKE) -f sample_path_finding/CMakeFiles/sample_path_finding.dir/build.make sample_path_finding/CMakeFiles/sample_path_finding.dir/build
+.PHONY : sample_path_finding/fast
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -1062,6 +1075,7 @@ help:
 	@echo "... actionlib_generate_messages_cpp"
 	@echo "... actionlib_generate_messages_eus"
 	@echo "... astar_gridmap_searcher"
+	@echo "... sample_path_finding"
 .PHONY : help
 
 

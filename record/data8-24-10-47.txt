@@ -1,0 +1,80 @@
+*****************************************************
+path search success!!!!!!!!!
+weight_g: 1 weight_h: 1
+Heuristic_Options: 2
+total cost(G): 15821
+use node num: 20
+iter num: 18
+node_closed_num: 19
+*****************************************************
+path search success!!!!!!!!!
+weight_g: 1 weight_h: 1
+Heuristic_Options: 2
+total cost(G): 13119
+use node num: 16
+iter num: 13
+node_closed_num: 14
+*****************************************************
+path search success!!!!!!!!!
+weight_g: 1 weight_h: 1
+Heuristic_Options: 2
+total cost(G): 48183
+use node num: 21
+iter num: 20
+node_closed_num: 21
+*****************************************************
+path search success!!!!!!!!!
+weight_g: 1 weight_h: 1
+Heuristic_Options: 2
+total cost(G): 25009
+use node num: 21
+iter num: 20
+node_closed_num: 21
+*****************************************************
+path search success!!!!!!!!!
+weight_g: 1 weight_h: 1
+Heuristic_Options: 2
+total cost(G): 507
+use node num: 20156
+iter num: 19723
+node_closed_num: 19724
+*****************************************************
+path search success!!!!!!!!!
+weight_g: 1 weight_h: 1
+Heuristic_Options: 2
+total cost(G): 54
+use node num: 149
+iter num: 35
+node_closed_num: 36
+*****************************************************
+path search success!!!!!!!!!
+weight_g: 1 weight_h: 1
+Heuristic_Options: 2
+total cost(G): 117
+use node num: 1710
+iter num: 1491
+node_closed_num: 1492
+*****************************************************
+path search success!!!!!!!!!
+weight_g: 1 weight_h: 1
+Heuristic_Options: 2
+total cost(G): 192
+use node num: 10269
+iter num: 9824
+node_closed_num: 9825
+*****************************************************
+path search success!!!!!!!!!
+weight_g: 1 weight_h: 1
+Heuristic_Options: 2
+total cost(G): 398
+use node num: 18344
+iter num: 18057
+node_closed_num: 18058
+*****************************************************
+path search success!!!!!!!!!
+weight_g: 1 weight_h: 1
+Heuristic_Options: 2
+total cost(G): 121
+use node num: 303
+iter num: 77
+node_closed_num: 78

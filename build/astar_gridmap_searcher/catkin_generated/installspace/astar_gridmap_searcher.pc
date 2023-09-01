@@ -3,6 +3,6 @@ prefix=/home/zs/motion_planner/install
 Name: astar_gridmap_searcher
 Description: Description of astar_gridmap_searcher
 Version: 0.0.0
-Cflags: 
+Cflags: -I${prefix}/include
 Libs: -L${prefix}/lib 
 Requires: 

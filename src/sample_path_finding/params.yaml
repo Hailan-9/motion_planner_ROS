@@ -1,0 +1,7 @@
+# params.yaml
+allocate_num: 100
+resolution: 0.05f
+collision_check_num: 4.0f
+stepSize: 0.2f
+goal_tolerance: 0.04f
+sample_path_find_choice: "rrt"

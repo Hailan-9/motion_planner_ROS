@@ -134,6 +134,7 @@ if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   include("/home/zs/motion_planner/build/minimum_snap/cmake_install.cmake")
   include("/home/zs/motion_planner/build/map_generator/cmake_install.cmake")
   include("/home/zs/motion_planner/build/astar_gridmap_searcher/cmake_install.cmake")
+  include("/home/zs/motion_planner/build/sample_path_finding/cmake_install.cmake")
 
 endif()
 

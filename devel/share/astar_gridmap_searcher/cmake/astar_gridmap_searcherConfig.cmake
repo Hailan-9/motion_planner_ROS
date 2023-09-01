@@ -91,9 +91,9 @@ endif()
 # flag project as catkin-based to distinguish if a find_package()-ed project is a catkin project
 set(astar_gridmap_searcher_FOUND_CATKIN_PROJECT TRUE)
 
-if(NOT " " STREQUAL " ")
+if(NOT "/home/zs/motion_planner/src/astar_gridmap_searcher/include " STREQUAL " ")
   set(astar_gridmap_searcher_INCLUDE_DIRS "")
-  set(_include_dirs "")
+  set(_include_dirs "/home/zs/motion_planner/src/astar_gridmap_searcher/include")
   if(NOT " " STREQUAL " ")
     set(_report "Check the issue tracker '' and consider creating a ticket if the problem has not been reported yet.")
   elseif(NOT " " STREQUAL " ")

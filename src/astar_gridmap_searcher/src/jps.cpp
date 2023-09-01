@@ -119,8 +119,7 @@ int JPS::jpsSearchPath(Point& startPoint, Point& endPoint, bool isIgnoreCorner)
         // node_visited_visual.scale.y = resolution * 1;
         // node_visited_visual.scale.z = resolution * 0.001;
 
-        ros::Duration(1.5).sleep();
-        cout <<"@@@@@@@@@@@@@@@@@@"<<endl;
+        ros::Duration(0.5).sleep();
         // 寻找开启列表中F值最低的点，称其为当前点
         curPoint = openList.top();
 

@@ -688,6 +688,9 @@ actionlib_msgs_DIR:PATH=/opt/ros/noetic/share/actionlib_msgs/cmake
 //Value Computed by CMake
 astar_gridmap_searcher_BINARY_DIR:STATIC=/home/zs/motion_planner/build/astar_gridmap_searcher
 
+//The directory containing a CMake configuration file for astar_gridmap_searcher.
+astar_gridmap_searcher_DIR:PATH=/home/zs/motion_planner/devel/share/astar_gridmap_searcher/cmake
+
 //Value Computed by CMake
 astar_gridmap_searcher_SOURCE_DIR:STATIC=/home/zs/motion_planner/src/astar_gridmap_searcher
 
@@ -767,14 +770,8 @@ gtest_hide_internal_symbols:BOOL=OFF
 //Dependencies for the target
 gtest_main_LIB_DEPENDS:STATIC=general;gtest;
 
-//Value Computed by CMake
-jps_gridmap_searcher_BINARY_DIR:STATIC=/home/zs/motion_planner/build/jps_gridmap_searcher
-
-//Value Computed by CMake
-jps_gridmap_searcher_SOURCE_DIR:STATIC=/home/zs/motion_planner/src/jps_gridmap_searcher
-
 //Path to a library.
-lib:FILEPATH=/usr/lib/liborocos-kdl.so
+lib:FILEPATH=/opt/ros/noetic/lib/libtf2.so
 
 //Value Computed by CMake
 map_generator_BINARY_DIR:STATIC=/home/zs/motion_planner/build/map_generator
@@ -841,6 +838,12 @@ rospy_DIR:PATH=/opt/ros/noetic/share/rospy/cmake
 
 //The directory containing a CMake configuration file for rostime.
 rostime_DIR:PATH=/opt/ros/noetic/share/rostime/cmake
+
+//Value Computed by CMake
+sample_path_finding_BINARY_DIR:STATIC=/home/zs/motion_planner/build/sample_path_finding
+
+//Value Computed by CMake
+sample_path_finding_SOURCE_DIR:STATIC=/home/zs/motion_planner/src/sample_path_finding
 
 //The directory containing a CMake configuration file for sensor_msgs.
 sensor_msgs_DIR:PATH=/opt/ros/noetic/share/sensor_msgs/cmake
@@ -1045,7 +1048,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_NM
 CMAKE_NM-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=7
+CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=8
 //ADVANCED property for variable: CMAKE_OBJCOPY
 CMAKE_OBJCOPY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_OBJDUMP

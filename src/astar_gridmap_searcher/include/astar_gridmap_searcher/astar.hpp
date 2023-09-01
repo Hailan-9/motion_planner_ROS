@@ -100,6 +100,10 @@ struct Point
     // 默认构造函数
     Point()
     {
+        x = 0;
+        y = 0;
+        w_x = 0;
+        w_y = 0;
         parent = NULL;
         point_State = NOT_EXPAND;
         expand_dir = Eigen::Vector2f::Zero();
@@ -137,7 +141,7 @@ struct NodeComparator
 
         // 补充完善！借鉴自：https://github.com/KumarRobotics/jps3d/tree/master
         // if( ( node1->F >= node2->F- 0.000001) && (node1->F <= node2->F +0.000001) )
-        //     return node1->G > node2->G // if equal compare gvals
+        //     return node1->G > node2->G // if F equal compare gvals
       
     }
 };
