@@ -39,7 +39,7 @@ class RRT
     public:
         RRT() {};// 构造函数声明和定义，空定义
         ~RRT();// 析构函数声明
-        void init(const vector<vector<int>> &_map, Eigen::Vector2f origin);
+        void init(const vector<vector<int>> &_map, Eigen::Vector2f origin, ros::NodeHandle& nh);
         int pathFind(const Point& startPoint, const Point& endPoint);
         vector<Eigen::Vector2f> getPath();
         void setParam(ros::NodeHandle& nh);
@@ -67,6 +67,8 @@ class RRT
         float goal_tolerance;
         // 分配的节点内存个数
         int allocate_num;
+        int iterm_num;
+        int max_iter_num;
         // 分次进行递进检查x_new和x_nearest的连线是否碰到了障碍物
         float collision_check_num;
 
@@ -98,8 +100,14 @@ class RRT
         // 可视化
         // 发布树结构
         ros::Publisher tree_pub;
+        ros::Publisher xnew_Pub;
+        // 测试验证一下是不是最近邻
+        ros::Publisher xrand_Pub;
+
         ros::Publisher path_pub;
         visualization_msgs::Marker tree;
+        visualization_msgs::Marker xnew_visual;
+
         nav_msgs::Path path;
 
 };

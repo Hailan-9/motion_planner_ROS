@@ -20,6 +20,8 @@
 
 
 std::ofstream outfile_rrt;
+std::ofstream outfile_rrt1;
+
 using namespace std;
 // #define Test_separately
 
@@ -35,11 +37,11 @@ int main(int argc, char *argv[])
     time(&currentTime);
     currentTime = currentTime + 8 * 3600; //	格林尼治标准时间+8个小时
     tm *t = gmtime(&currentTime);	
-    string filename = "/home/zs/sample_path_finding/record/datalog" + to_string(t->tm_mon + 1) + "-" +to_string(t->tm_mday) + "-" + to_string(t->tm_hour) + "-" + to_string(t->tm_min) + ".txt";
-    // string filename1 = "/home/zs/motion_planner/record/data_visitednode" + to_string(t->tm_mon + 1) + "-" +to_string(t->tm_mday) + "-" + to_string(t->tm_hour) + "-" + to_string(t->tm_min) + ".txt";
+    string filename = "/home/zs/motion_planner/src/sample_path_finding/record/datalog" + to_string(t->tm_mon + 1) + "-" +to_string(t->tm_mday) + "-" + to_string(t->tm_hour) + "-" + to_string(t->tm_min) + ".txt";
+    string filename1 = "/home/zs/motion_planner/src/sample_path_finding/record/datalog1--" + to_string(t->tm_mon + 1) + "-" +to_string(t->tm_mday) + "-" + to_string(t->tm_hour) + "-" + to_string(t->tm_min) + ".txt";
     
     outfile_rrt.open(filename.c_str());
-    // outfile1.open(filename1.c_str());
+    outfile_rrt1.open(filename1.c_str());
 
 
 
@@ -106,13 +108,15 @@ void startFindPath(ros::NodeHandle& nh)
     Algorithm_Timer algorithm_Timer;
     algorithm_Timer.begin();
 
-    rrt.setParam(nh);
 
     if (!init_finish)
     {
-        rrt.init(mapData,map_origin);
+        rrt.init(mapData, map_origin, nh);
         init_finish = true;
     }
+
+    rrt.setParam(nh);
+
     cout <<"test rrt"<<endl;
     rrt.reset(); 
     
@@ -208,6 +212,8 @@ void initPoseCallback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& 
     pt.x = msgPtr->pose.pose.position.x;
     pt.y = msgPtr->pose.pose.position.y;
 
+    outfile_rrt1 <<"start_point: " <<pt.x<<" "<<pt.y<<endl;
+
     node_vis.points.emplace_back(pt);
     rrt_Pub_Startpoint.publish(node_vis);
     // 世界地图坐标系下
@@ -223,6 +229,8 @@ void goalPoseCallback(const geometry_msgs::PoseStamped::ConstPtr& msgPtr, ros::N
 {
     ROS_INFO("goalCallback-----------------");
     outfile_rrt <<"*************************new start************************" << endl;
+    outfile_rrt1 <<"*************new start***************" <<endl;
+
     visualization_msgs::Marker node_vis;
     node_vis.header.frame_id = "map";
     node_vis.header.stamp = ros::Time::now();
@@ -247,6 +255,7 @@ void goalPoseCallback(const geometry_msgs::PoseStamped::ConstPtr& msgPtr, ros::N
     geometry_msgs::Point pt;
     pt.x = msgPtr->pose.position.x;
     pt.y = msgPtr->pose.position.y;
+    outfile_rrt1 << "goal_point: " <<pt.x<<" "<<pt.y<<endl;
 
     node_vis.points.emplace_back(pt);
     rrt_Pub_Goalpoint.publish(node_vis);
@@ -282,14 +291,18 @@ void publishPath()
 
     nav_msgs::Path rrtPathMsg;
 
+
+
     for (int i = 0; i < pathPoint.size(); i++)
     {
         geometry_msgs::PoseStamped pathPose;
 
-
+        outfile_rrt1 << pathPoint[i](0) <<" "<<pathPoint[i](1) <<endl;
         pathPose.pose.position.x = pathPoint[i](0);
         pathPose.pose.position.y = pathPoint[i](1);
         pathPose.pose.position.z = 0.0;
+
+        
 
         rrtPathMsg.header.stamp = ros::Time::now();
         rrtPathMsg.header.frame_id = "odom";

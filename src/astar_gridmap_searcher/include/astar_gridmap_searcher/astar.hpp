@@ -58,6 +58,8 @@ enum
     DIAGONAL_DISTANCE =3
 };
 
+// 指针串指针的一种数据结构
+// 刷代码随想录网站学到链表的时候，发现这其实更准确的叫单链表的数据结构20230902
 struct Point
 {
     // 以下变量均基于栅格地图
@@ -121,6 +123,13 @@ struct Point
         w_x = w_pos_(0);
         w_y = w_pos_(1);
     }
+    void set_w_pos(float _wx, float _wy)
+    {
+        w_x = _wx;
+        w_y = _wy;
+        w_pos <<w_x, w_y;
+    }
+    
 
 
 };

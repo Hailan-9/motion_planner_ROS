@@ -1,7 +1,10 @@
 # params.yaml
-allocate_num: 100
-resolution: 0.05f
-collision_check_num: 4.0f
-stepSize: 0.2f
-goal_tolerance: 0.04f
+# 注意！！！！！！！ yaml中数据后面不能加后缀f等标识，否则传不进去，最终用的是param的第三个参数值
+# ros的一个很重要的小细节
+allocate_num: 10000
+resolution: 0.05
+collision_check_num: 4.0
+stepSize: 0.2
+goal_tolerance: 0.04
 sample_path_find_choice: "rrt"
+max_iter_num: 5000

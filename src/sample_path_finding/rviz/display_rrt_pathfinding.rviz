@@ -7,10 +7,10 @@ Panels:
         - /Global Options1
         - /Axes1
         - /Path1
-        - /Path1/Status1
         - /goal_Point1
         - /start_Point1
         - /sample_tree1
+        - /sample_tree_newpoint1
       Splitter Ratio: 0.5
     Tree Height: 1079
   - Class: rviz/Selection
@@ -83,7 +83,7 @@ Visualization Manager:
       Head Diameter: 0.30000001192092896
       Head Length: 0.20000000298023224
       Length: 0.30000001192092896
-      Line Style: Lines
+      Line Style: Billboards
       Line Width: 0.029999999329447746
       Name: Path
       Offset:
@@ -127,7 +127,7 @@ Visualization Manager:
       Marker Topic: /rrt_node/goal_point
       Name: goal_Point
       Namespaces:
-        "": true
+        {}
       Queue Size: 100
       Value: true
     - Class: rviz/Marker
@@ -135,13 +135,21 @@ Visualization Manager:
       Marker Topic: /rrt_node/start_point
       Name: start_Point
       Namespaces:
-        "": true
+        {}
       Queue Size: 100
       Value: true
     - Class: rviz/Marker
       Enabled: true
       Marker Topic: /rrt_node/sample_tree
       Name: sample_tree
+      Namespaces:
+        {}
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /rrt_node/sample_xnew
+      Name: sample_tree_newpoint
       Namespaces:
         {}
       Queue Size: 100
@@ -174,7 +182,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 17.590471267700195
+      Distance: 22.970802307128906
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -182,17 +190,17 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: 3.6119279861450195
-        Y: 6.369880199432373
-        Z: -10.072415351867676
+        X: 3.5294861793518066
+        Y: 5.337132930755615
+        Z: -10.326656341552734
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.3697965145111084
+      Pitch: 1.3597965240478516
       Target Frame: <Fixed Frame>
-      Yaw: 4.700014114379883
+      Yaw: 4.715014457702637
     Saved:
       - Class: rviz/Orbit
         Distance: 11.199999809265137

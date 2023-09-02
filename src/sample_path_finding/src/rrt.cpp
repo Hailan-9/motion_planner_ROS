@@ -25,6 +25,8 @@
 
 
 extern std::ofstream outfile_rrt;
+extern std::ofstream outfile_rrt1;
+
 // using namespace name;
 
 
@@ -35,7 +37,7 @@ extern std::ofstream outfile_rrt;
  * @author  hailan(https://github.com/Hailan-9)
  * @date    2023-08-27
  */
-void RRT::init(const vector<vector<int>> &_map, Eigen::Vector2f origin)
+void RRT::init(const vector<vector<int>> &_map, Eigen::Vector2f origin, ros::NodeHandle& nh)
 {
 
     // 载入地图
@@ -44,6 +46,7 @@ void RRT::init(const vector<vector<int>> &_map, Eigen::Vector2f origin)
     map_origin = origin;
 
 
+    nh.param("allocate_num", allocate_num, 10000);
     path_node_pool.resize(allocate_num);
     // 开辟内存
     for (int i(0); i < allocate_num; i++)
@@ -53,6 +56,40 @@ void RRT::init(const vector<vector<int>> &_map, Eigen::Vector2f origin)
 
     use_node_num = 0;
     
+
+
+    ROS_WARN("algorithm init over!!!!!!!!!!!!!!!!!");
+
+}
+
+
+
+
+void RRT::setParam(ros::NodeHandle& nh)
+{
+    nh.param("allocate_num", allocate_num, 10000);
+    nh.param("resolution", resolution, 0.05f);
+    nh.param("collision_check_num", collision_check_num, 4.0f);
+    nh.param("stepSize", stepSize, 0.2f);
+    nh.param("goal_tolerance", goal_tolerance, 0.2f);
+    nh.param("max_iter_num", max_iter_num, 5000);
+    cout <<"whether has goal_tolerance: " <<nh.hasParam("goal_tolerance")<<endl;
+    // nh.param("min_val_x", min_val(0), 0.0);
+    // nh.param("min_val_y", min_val(1), 0.0);
+    // nh.param("max_val_x", max_val(0), 0.0);
+    // nh.param("max_val_y", max_val(1), 0.0);
+    // 随机撒点采样的最大最小范围
+    min_val = map_origin;
+    max_val(0) = map_size(0) * resolution + map_origin(0);
+    max_val(1) = map_size(1) * resolution + map_origin(1);
+    tree_pub = nh.advertise<visualization_msgs::Marker>("sample_tree",1);
+    xnew_Pub = nh.advertise<visualization_msgs::Marker>("sample_xnew",1);
+
+    cout <<"rrt param set finish-------------" << endl;
+    cout <<"min_val-------------" << min_val(0)<<" "<<min_val(1)<<endl;
+    cout <<"max_val-------------" << max_val(0)<<" "<<max_val(1)<<endl;
+
+
 
     // 生成的树进行可视化----增量式可视化处理
     tree.header.frame_id = "map";
@@ -78,7 +115,32 @@ void RRT::init(const vector<vector<int>> &_map, Eigen::Vector2f origin)
     // 发布新生成的树，需要起点和终点，即x_nearest和x_new
     // tree.points.emplace_back(sub_tree_start);
     // tree.points.emplace_back(sub_tree_end);
-    ROS_WARN("algorithm init over!!!!!!!!!!!!!!!!!");
+
+
+
+
+    // 新产生的xnew采样点的可视化
+    // 蓝色
+    xnew_visual.header.frame_id = "map";
+    xnew_visual.header.stamp = ros::Time::now();
+    xnew_visual.type = visualization_msgs::Marker::CUBE_LIST;
+    xnew_visual.action = visualization_msgs::Marker::ADD;
+    xnew_visual.id = 3;
+
+    xnew_visual.pose.orientation.x = 0.0;
+    xnew_visual.pose.orientation.y = 0.0;
+    xnew_visual.pose.orientation.z = 0.0;
+    xnew_visual.pose.orientation.w = 1.0;
+
+    xnew_visual.color.a = 1.0;
+    xnew_visual.color.r = 0.0;
+    xnew_visual.color.g = 0.0;
+    xnew_visual.color.b = 1.0;
+
+    xnew_visual.scale.x = resolution * 0.5;
+    xnew_visual.scale.y = resolution * 0.5;
+    xnew_visual.scale.z = resolution * 0.001;
+
 
 }
 
@@ -232,24 +294,28 @@ int RRT::pathFind(const Point& startPoint, const Point& endPoint)
     PointPtr x_new_ptr;
 
     PointPtr startPointPtr = path_node_pool[0];
-    startPointPtr->w_x = startPoint.w_x;
-    startPointPtr->w_y = startPoint.w_y;
-
+    startPointPtr->set_w_pos(startPoint.w_x, startPoint.w_y);
 
 
     Eigen::Vector2d dist_goal;
     // 新生成的子树
     geometry_msgs::Point sub_tree_start, sub_tree_end;
+    geometry_msgs::Point xnew_visual_point;
 
     node_list.emplace_back(startPointPtr);
 
     use_node_num += 1;
 
-    ROS_WARN("start sample path finding");
 
-    while (1)
+
+
+    ROS_WARN("start sample path finding");
+    /* ---------------sanple finding--------------- */
+    // while (1)
+    while (iterm_num < max_iter_num)
     {
-        ros::Duration(1.5).sleep();
+        iterm_num++;
+        ros::Duration(1).sleep();
 
         // cout << "use_node_num: "<< use_node_num <<endl;
         x_rand = randomSample();
@@ -263,6 +329,13 @@ int RRT::pathFind(const Point& startPoint, const Point& endPoint)
         }
         else
         {
+            // x_new新采样点的可视化显示
+            xnew_visual_point.x = x_new.w_x;
+            xnew_visual_point.y = x_new.w_y;
+
+            xnew_visual.points.emplace_back(xnew_visual_point);
+            xnew_Pub.publish(xnew_visual);
+
 
             sub_tree_start.x = x_nearest->w_x;
             sub_tree_start.y = x_nearest->w_y;
@@ -273,13 +346,12 @@ int RRT::pathFind(const Point& startPoint, const Point& endPoint)
             tree.points.emplace_back(sub_tree_end);
             // 可视化发布
             tree_pub.publish(tree);
-            
+    
 
 
             x_new_ptr = path_node_pool[use_node_num];
             x_new_ptr->parent = x_nearest;
-            x_new_ptr->w_x = x_new.w_x;
-            x_new_ptr->w_y = x_new.w_y;
+            x_new_ptr->set_w_pos(x_new.w_x, x_new.w_y);
 
             node_list.emplace_back(x_new_ptr);
 
@@ -289,6 +361,10 @@ int RRT::pathFind(const Point& startPoint, const Point& endPoint)
             dist_goal<<x_new.w_x - endPoint.w_x, x_new.w_y - endPoint.w_y;
             if (dist_goal.squaredNorm() < goal_tolerance)
             {
+                outfile_rrt1 <<"iter_num: "<<iterm_num<<endl;
+                outfile_rrt1 <<"goal_tolerance: "<<goal_tolerance<<endl;
+                outfile_rrt1 <<"dist_goal.squaredNorm(): " <<dist_goal.squaredNorm()<<endl;
+                outfile_rrt1 <<"x_new_ptr: " <<x_new_ptr->w_x << " " << x_new_ptr->w_y <<endl;
                 retrievePath(x_new_ptr);
                 return REACH_END;
             }
@@ -311,6 +387,10 @@ int RRT::pathFind(const Point& startPoint, const Point& endPoint)
 
 
     }
+
+    cout <<"use_node_num: "<<use_node_num<<endl;
+    ROS_WARN(" over iterm_num!");
+    return NO_PATH;
 }
 
 
@@ -323,14 +403,22 @@ int RRT::pathFind(const Point& startPoint, const Point& endPoint)
  */
 void RRT::retrievePath(PointPtr end_node)
 {
+    // 这俩是不同的指针了 分离
+    // end_node这个指针变量不会跟着cur_node的变化而变化
+    // cur_node和end_node是两个独立的指针变量
+    // 后面语句中，指针变量cur_node不断地指向新的内存地址
     PointPtr cur_node = end_node;
     path_nodes.push_back(cur_node);
+    
+    outfile_rrt1 <<"retrievePath"<<endl;
     while (cur_node->parent != NULL)
     {
         cur_node = cur_node->parent;
         path_nodes.push_back(cur_node);
+        outfile_rrt1 << cur_node->w_x <<" "<<cur_node->w_y<<endl;
     }
 
+    outfile_rrt1 <<"retrieve over"<<endl;
     reverse(path_nodes.begin(), path_nodes.end());
 }
 
@@ -350,30 +438,7 @@ vector<Eigen::Vector2f> RRT::getPath()
 }
 
 
-void RRT::setParam(ros::NodeHandle& nh)
-{
-    nh.param("allocate_num", allocate_num, 10000);
-    nh.param("resolution", resolution, 0.05f);
-    nh.param("collision_check_num", collision_check_num, 4.0f);
-    nh.param("stepSize", stepSize, 0.2f);
-    nh.param("goal_tolerance", goal_tolerance, 0.2f);
-    // nh.param("min_val_x", min_val(0), 0.0);
-    // nh.param("min_val_y", min_val(1), 0.0);
-    // nh.param("max_val_x", max_val(0), 0.0);
-    // nh.param("max_val_y", max_val(1), 0.0);
-    // 随机撒点采样的最大最小范围
-    min_val = map_origin;
-    max_val(0) = map_size(0) * resolution + map_origin(0);
-    max_val(1) = map_size(1) * resolution + map_origin(1);
-    tree_pub = nh.advertise<visualization_msgs::Marker>("sample_tree",1);
 
-    cout <<"rrt param set finish-------------" << endl;
-    cout <<"min_val-------------" << min_val(0)<<" "<<min_val(1)<<endl;
-    cout <<"max_val-------------" << max_val(0)<<" "<<max_val(1)<<endl;
-
-
-
-}
 
 void RRT::reset()
 {
@@ -385,10 +450,13 @@ void RRT::reset()
         node->parent = NULL;
     }
     tree.points.clear();
+    xnew_visual.points.clear();
+
     path_nodes.clear();
     node_list.clear();
 
     use_node_num = 0;
+    iterm_num = 0;
 }
 
 

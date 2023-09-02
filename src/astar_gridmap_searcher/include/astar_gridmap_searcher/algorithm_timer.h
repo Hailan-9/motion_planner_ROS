@@ -32,7 +32,7 @@ class Algorithm_Timer
             std::chrono::duration<double> use_time = end_ - start_;
 
             std::cout.precision(3);
-            std::cout << task_name<<" use time(ms): " << use_time.count()*1000 <<std::endl;
+            std::cout << task_name << " algorithm "<<" use time(ms): " << use_time.count()*1000 <<std::endl;
         }
         double end() 
         {
